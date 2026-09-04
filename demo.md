@@ -38,12 +38,12 @@ Ask, verbatim: "What makes it not a fit?"
 
 Log the answer verbatim. File it against one of the four kill criteria the same day.
 
-**PLACEHOLDER, not enumerated in the build guide.** The build guide's Phase 4 dispatch (step 5) instructs listing "the four kill criteria from the guide" but does not itself enumerate them; they live in the Pilot Manager Conversations Question Guide (Notion, private), which is a separate source this pack was not given. Pull the four criteria from that page and replace this list before the next call:
+The four kill criteria, from the Pilot Manager Conversations Question Guide, written before the calls so they cannot be softened later:
 
-- [ ] Kill criterion 1: fill in from the Pilot Manager Conversations Question Guide.
-- [ ] Kill criterion 2: fill in from the Pilot Manager Conversations Question Guide.
-- [ ] Kill criterion 3: fill in from the Pilot Manager Conversations Question Guide.
-- [ ] Kill criterion 4: fill in from the Pilot Manager Conversations Question Guide.
+- [ ] Budget and authority. If managers at this size consistently cannot commit spend for their own team without a process above them, the buyer is wrong and the segment reasoning changes, not the pitch.
+- [ ] The free substitute. If free resources are working fine for their teams, the same hole that sank the consumer version is present here.
+- [ ] The team unit. If most say their people figure things out individually, the coordinated unit premise is weaker than assumed and ops and GTM need re-examining, not defending.
+- [ ] The date. The single hardest signal. If nobody commits to a date after the full conversation, nothing gets built.
 
 ## Never say
 
