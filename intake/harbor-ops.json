@@ -1,0 +1,23 @@
+{
+  "company": "Harbor Logistics",
+  "teamName": "Harbor Support Ops",
+  "headcount": 5,
+  "function": "ops",
+  "stack": ["Zendesk", "Slack", "Google Sheets", "Gemini"],
+  "sopName": "Weekly escalation review",
+  "sopSummary": "Every Friday afternoon, Ama and Jordan pull the week's escalated tickets out of Zendesk into a shared Google Sheet. They split the list and reread each ticket's full thread to decide which root cause category it belongs to: product bug, shipping delay, billing error, or customer confusion. When a ticket is ambiguous they message each other on Slack and argue out the right tag together before moving on. Once every ticket is tagged, one of them writes a short summary of the week's top three root causes and posts it to the team channel. The categories live only in the Sheet, Zendesk's own ticket fields are never updated, so the reread starts over from nothing the following week.",
+  "pain": "Two people spend every Friday afternoon re-reading tickets to tag root causes.",
+  "deadline": "From October, Sam wants the root-cause summary finished before the Friday 4pm team standup instead of eating the whole afternoon, and she has said the four categories cannot be cut just to save time.",
+  "offLimits": ["Customer names or details leaving Zendesk"],
+  "closedLevers": [
+    "Buying a ticket analytics add-on: no budget",
+    "Changing Zendesk macros: owned by another team"
+  ],
+  "theme": "automation",
+  "pairs": [["Ama", "Jordan"], ["Priya", "Tom"]],
+  "tiers": { "Ama": "confident", "Jordan": "cautious", "Priya": "cautious", "Tom": "confident" },
+  "managerName": "Sam Okafor",
+  "managerRole": "Head of Support Ops",
+  "eventDate": "2026-09-28",
+  "leadUpStart": "2026-09-21"
+}

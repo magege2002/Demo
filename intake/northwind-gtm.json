@@ -1,0 +1,24 @@
+{
+  "company": "Northwind Logistics Software",
+  "teamName": "Northwind Marketing",
+  "headcount": 8,
+  "function": "gtm",
+  "stack": ["HubSpot", "Slack", "Google Sheets", "Copilot", "Notion"],
+  "sopName": "Outbound sequence QA",
+  "sopSummary": "The team runs twelve outbound email sequences in HubSpot. When a sequence is written or changed, the writer posts it in the marketing Slack channel, one other person reads it for tone against the brand voice page in Notion, and legal is copied on any sequence that makes a claim about delivery times or savings. Reply rates are checked in a Google Sheet that Marcus updates from HubSpot every other Friday. There is no fixed owner for the QA step and the new SDR who joined last month has not been through it.",
+  "pain": "Reply rate fell from 4 percent to 1.8 percent over two months and nobody can say why.",
+  "deadline": "Marcus has to present a fix to the CRO at the end of the month, either rewrite all twelve sequences or change how they are reviewed.",
+  "offLimits": ["Any claim about delivery times or savings going out without legal sign-off", "Scraping or enriching prospect data from outside HubSpot"],
+  "closedLevers": [
+    "Buying a new outbound tool: the CRO said no until reply rate recovers on the current one",
+    "Sending more volume: deliverability team has capped daily sends",
+    "Hiring a copywriter: no budget this quarter"
+  ],
+  "theme": "research",
+  "pairs": [["Jade", "Omar"], ["Elena", "Tariq"], ["Nia", "Wes"], ["Leo", "Grace"]],
+  "tiers": { "Jade": "confident", "Omar": "cautious", "Elena": "cautious", "Tariq": "confident", "Nia": "cautious", "Wes": "cautious", "Leo": "confident", "Grace": "cautious" },
+  "managerName": "Marcus Bell",
+  "managerRole": "Marketing Manager",
+  "eventDate": "2026-09-28",
+  "leadUpStart": "2026-09-21"
+}

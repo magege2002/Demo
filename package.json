@@ -1,0 +1,27 @@
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "generate": "node generate.mjs",
+    "check": "node check.mjs",
+    "demo": "node -e \"console.log('see demo.md')\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/magege2002/Demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/magege2002/Demo/issues"
+  },
+  "homepage": "https://github.com/magege2002/Demo#readme",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.123.0",
+    "dotenv": "^17.4.2"
+  }
+}

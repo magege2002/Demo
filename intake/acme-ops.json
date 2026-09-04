@@ -1,0 +1,24 @@
+{
+  "company": "Acme Software",
+  "teamName": "Acme RevOps",
+  "headcount": 7,
+  "function": "ops",
+  "stack": ["HubSpot", "Slack", "Google Sheets", "Copilot"],
+  "sopName": "Weekly pipeline review report",
+  "sopSummary": "Every Monday from 8am, Dana exports the open deals view from HubSpot into Google Sheets. Luis reconciles rows where the deal stage in HubSpot does not match the stage the rep wrote in the notes field, messaging reps on Slack to confirm. Dana rebuilds the summary tab by hand: pipeline by stage, expected close this month, and slipped deals. Luis writes a short commentary. The report is posted to the leadership Slack channel by noon and the VP of Sales asks follow-up questions in the thread through the afternoon.",
+  "pain": "Two people lose every Monday morning to a report the VP reads for three numbers.",
+  "deadline": "From October the VP wants the report in her inbox by 9am, not noon, and she has said she will not accept a shorter version.",
+  "offLimits": ["Changing the HubSpot pipeline schema or stage names", "Customer names or emails leaving HubSpot into any AI tool"],
+  "closedLevers": [
+    "Hiring a contractor to run the report: no headcount or contractor budget this quarter",
+    "Buying a BI tool: procurement is closed until the new fiscal year",
+    "Asking the VP to read a dashboard instead: she has said twice that she wants a written report"
+  ],
+  "theme": "automation",
+  "pairs": [["Dana", "Luis"], ["Kofi", "Renee"], ["Sara", "Ben"]],
+  "tiers": { "Dana": "confident", "Luis": "cautious", "Kofi": "cautious", "Renee": "confident", "Sara": "cautious", "Ben": "cautious" },
+  "managerName": "Priya Natarajan",
+  "managerRole": "Director of Revenue Operations",
+  "eventDate": "2026-09-21",
+  "leadUpStart": "2026-09-14"
+}
