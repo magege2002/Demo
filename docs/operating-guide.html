@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sociaily Case Engine, Operating Guide</title>
+<style>
+  @page { size: letter; margin: 22mm 20mm 20mm 20mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    color: #1a1a1a; font-size: 10.5pt; line-height: 1.5; margin: 0;
+  }
+  h1 { font-size: 23pt; margin: 0 0 2pt; letter-spacing: -0.4pt; }
+  .sub { color: #555; font-size: 11pt; margin: 0 0 4pt; }
+  .meta { color: #8a8a8a; font-size: 8.5pt; margin: 0 0 18pt; }
+  h2 {
+    font-size: 13pt; margin: 22pt 0 6pt; padding-bottom: 3pt;
+    border-bottom: 1.5px solid #d8451f; color: #b8380f;
+    page-break-after: avoid;
+  }
+  h3 { font-size: 10.5pt; margin: 12pt 0 3pt; color: #000; page-break-after: avoid; }
+  p { margin: 0 0 7pt; }
+  ol, ul { margin: 0 0 8pt; padding-left: 18pt; }
+  li { margin-bottom: 3pt; }
+  code {
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 9pt;
+    background: #f2f2f0; padding: 1px 4px; border-radius: 3px;
+  }
+  pre {
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.6pt;
+    background: #1e1e1e; color: #eaeaea; padding: 9pt 11pt; border-radius: 5px;
+    line-height: 1.45; overflow: hidden; white-space: pre-wrap; margin: 0 0 8pt;
+    page-break-inside: avoid;
+  }
+  pre .c { color: #7fb069; }
+  table { width: 100%; border-collapse: collapse; margin: 2pt 0 10pt; font-size: 9pt; page-break-inside: avoid; }
+  th, td { text-align: left; vertical-align: top; padding: 4pt 7pt; border-bottom: 0.75px solid #ddd; }
+  th { background: #f5f3f0; border-bottom: 1px solid #c9c4bd; font-weight: 600; }
+  td:first-child { white-space: nowrap; font-family: "SF Mono", Menlo, monospace; font-size: 8.4pt; color: #b8380f; }
+  .wide td:first-child { white-space: normal; font-family: inherit; font-size: 9pt; color: inherit; }
+  .callout {
+    background: #fdf4f1; border-left: 3px solid #d8451f; padding: 8pt 11pt;
+    margin: 4pt 0 10pt; border-radius: 0 4px 4px 0; font-size: 9.5pt;
+  }
+  .callout strong { color: #b8380f; }
+  .section { page-break-inside: avoid; }
+  footer { margin-top: 18pt; padding-top: 8pt; border-top: 0.75px solid #ddd; color: #999; font-size: 8pt; }
+  .lead { font-size: 11pt; color: #333; margin-bottom: 14pt; }
+</style>
+</head>
+<body>
+
+<h1>Sociaily Case Engine</h1>
+<p class="sub">Operating Guide</p>
+<p class="meta">Intake in, scenario pack out. A standalone Node tool. September 2026.</p>
+
+<p class="lead">This turns one manager's intake record into a complete scenario pack for a single Sociaily team event: the case brief, two staggered partner tracks, the optional pair bonus, the ninety minute main event with gated exhibits and injections, the facilitator notes, and the retrospective with a revised SOP. It runs as one command and writes seven markdown files to disk. It is the plumbing that makes the tailoring claim real and gives you a draft to rewrite by hand for session one. It is not a website, a database, or a deployed app.</p>
+
+<div class="section">
+<h2>1. One-time setup</h2>
+<p>You need Node 20 or newer and your personal Anthropic API key. The key is read from a local <code>.env</code> file that is never committed. Never use the shared Sociaily key here.</p>
+<pre>cd ~/Projects/Demo
+git checkout claude/git-branch-creation-dhyd08
+echo 'ANTHROPIC_API_KEY=sk-ant-your-real-key' &gt; .env
+npm install</pre>
+<div class="callout"><strong>The key is not your Claude login.</strong> It is a separate API key from console.anthropic.com, billed per use. The <code>.env</code> file is already in <code>.gitignore</code>, so it stays on your machine and never reaches GitHub.</div>
+</div>
+
+<div class="section">
+<h2>2. The everyday loop</h2>
+<p>Three moves: point at an intake, generate, check. For an existing intake:</p>
+<pre>node generate.mjs intake/acme-ops.json
+node check.mjs out/acme-revops</pre>
+<p>What you should see: the seven files stream to the screen, then <code>stop_reason: end_turn</code>, a line reading <code>Wrote 7 files to out/&lt;slug&gt;</code>, a dash-replacement count (ideally <code>0</code>), and an elapsed time under about ninety seconds. Then <code>check</code> prints <code>PASS</code>. The output folder is named from the team name, so "Acme RevOps" writes to <code>out/acme-revops</code>, not <code>out/acme-ops</code>.</p>
+<p>A dry run assembles the full prompt without spending anything, useful for inspecting what the model will receive:</p>
+<pre>node generate.mjs intake/acme-ops.json --dry-run
+<span class="c"># writes out/&lt;slug&gt;/_prompt.md, makes no API call</span></pre>
+</div>
+
+<div class="section">
+<h2>3. Where things live</h2>
+<table>
+<tr><th>Path</th><th>What it is</th></tr>
+<tr><td>generate.mjs</td><td>The engine. Reads an intake, assembles the prompt, makes one call, writes the pack.</td></tr>
+<tr><td>check.mjs</td><td>The gate. Passes or fails a pack against structure, banned words, tool fidelity, the pair mechanic, dates, and case shape.</td></tr>
+<tr><td>prompts/case-method.md</td><td>The system prompt. The case-method rules and the output contract. This is the product; edit it to change how every pack reads.</td></tr>
+<tr><td>intake/schema.md</td><td>The field list, each mapped to the question you ask a manager on the call.</td></tr>
+<tr><td>intake/*.json</td><td>One record per team. acme-ops and northwind-gtm are the worked examples; harbor-ops is a third test team.</td></tr>
+<tr><td>examples/</td><td>The two hand-written gold packs, fed to the model as few-shot so new packs read like your voice, not a generic exercise.</td></tr>
+<tr><td>out/</td><td>Generated packs. Gitignored, local only.</td></tr>
+<tr><td>demo.md</td><td>The run sheet for the last five minutes of a manager call.</td></tr>
+<tr><td>rounds/</td><td>Build reports and the manager log.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>4. Making an intake for a real manager</h2>
+<p>Copy an existing file in <code>intake/</code>, rename it after the company, and fill in what you learned on the call. Every field maps to something the manager can answer. The full mapping lives in <code>intake/schema.md</code>; the fields that carry the most weight:</p>
+<table class="wide">
+<tr><th>Field</th><th>What it holds</th></tr>
+<tr><td>function</td><td>ops or gtm. This picks which gold example the engine uses as its model.</td></tr>
+<tr><td>stack</td><td>The exact tools on the team's seats. The pack may name only these. Nothing else.</td></tr>
+<tr><td>sopName, sopSummary</td><td>The current pre-AI workflow, in three to six sentences. This is what the case is built around.</td></tr>
+<tr><td>pain</td><td>The manager's own one sentence. Use their words, not a paraphrase.</td></tr>
+<tr><td>deadline</td><td>What changes and by when. This is the case's clock.</td></tr>
+<tr><td>closedLevers</td><td>Options the manager has already ruled out, each with a reason. These become the levers the pairs cannot pull.</td></tr>
+<tr><td>pairs, tiers</td><td>Who partners with whom, and whether each person is cautious or confident. Tier shapes the scaffolding, not the brief.</td></tr>
+<tr><td>eventDate, leadUpStart</td><td>The Monday of the event and the Monday the lead-up week starts.</td></tr>
+</table>
+<div class="callout"><strong>Two rules that decide whether a pack is any good.</strong> Every tool named in the pack comes only from the stack. And the pain, the deadline, and the workflow are the manager's, grounded by name. If a pack could be any company's, it failed, even if the gate passed.</div>
+</div>
+
+<div class="section">
+<h2>5. The seven files</h2>
+<table class="wide">
+<tr><th>File</th><th>What it is and how you use it</th></tr>
+<tr><td>00-case-brief.md</td><td>Under 120 words. The protagonist, the decision, the deadline. This is what you read aloud first on a call.</td></tr>
+<tr><td>01-partner-a-unlocks.md</td><td>Four dated unlocks for the confident partner, starting on the first lead-up day.</td></tr>
+<tr><td>02-partner-b-unlocks.md</td><td>The cautious partner's four unlocks, starting one day later so the pair has a reason to talk.</td></tr>
+<tr><td>03-pair-bonus.md</td><td>The optional edge. The twist that only appears when both halves are combined. This is the second thing you show on a call.</td></tr>
+<tr><td>04-main-event.md</td><td>The full ninety minute session: timeline, two gated exhibits, two injections, and the closing stand.</td></tr>
+<tr><td>05-facilitator.md</td><td>Your side. What to release when, what to say to closed levers, the agent hint budget, the process rubric.</td></tr>
+<tr><td>06-retro-and-artifacts.md</td><td>The retro, the reasoning card per pair, and the revised SOP skeleton. The revised SOP is the adoption evidence the manager keeps.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>6. The gate</h2>
+<p><code>node check.mjs out/&lt;slug&gt;</code> reads pass or fail so a generic or off-brand pack is caught by a script, not by a manager's face. It checks seven things: the seven files exist and are long enough, no banned words (hackathon, leaderboard, and the rest), no em dashes in prose, every tool named is in the intake, the pair twist did not leak into one half, the case shape is intact, and the unlock dates fall in the lead-up week with B starting after A. It prints every failure with a file and line, not just the first.</p>
+<div class="callout"><strong>When a real generation fails the gate, fix the prompt, not the gate.</strong> Open <code>prompts/case-method.md</code>, add the one rule that would have prevented the failure, and regenerate once. The gate is the ground truth. The only time you touch <code>check.mjs</code> is if it disagrees with the hand-written gold packs, which are the real standard.</p></div>
+</div>
+
+<div class="section">
+<h2>7. The model</h2>
+<p>The engine defaults to <code>claude-sonnet-4-6</code>. To run a different model for one generation, set the <code>MODEL</code> variable without editing anything:</p>
+<pre>MODEL=claude-sonnet-5 node generate.mjs intake/acme-ops.json</pre>
+</div>
+
+<div class="section">
+<h2>8. The five minute demo</h2>
+<p>The full run sheet is <code>demo.md</code>. The shape of it: before the call, generate a pack from what you know of their stack, or use the matching sample pack if you know nothing. Then, in the last five minutes, say the two sentences and stop talking. If they ask to see it, show the case brief, read it aloud, then show the pair bonus and say one sentence about it. Do not open the main event or the facilitator notes on a first call, and do not explain the format. If yes, ask what they would need to see before putting a date on the calendar. If no, ask what makes it not a fit and log the answer against the four kill criteria the same day. Never say hackathon, buildathon, platform, leaderboard, falling behind, or productivity gain.</p>
+</div>
+
+<div class="section">
+<h2>9. When something goes wrong</h2>
+<table class="wide">
+<tr><th>Symptom</th><th>What to do</th></tr>
+<tr><td>Fewer than seven files written</td><td>The engine prints <code>stop_reason</code>. If it is <code>max_tokens</code>, the pack was cut off. If the model changed the separator format, the split failed. Regenerate once; if it repeats, the gold example may be making the prompt too long.</td></tr>
+<tr><td>Passes the gate but reads generic</td><td>Read the generated brief next to the gold brief. For every sentence that could be any company, find the intake field that should have grounded it and add a rule to the prompt forcing that field by name. Regenerate once.</td></tr>
+<tr><td>Gate fails on a hand-written example</td><td>The examples are ground truth. The check is wrong, or the example has a typo. Fix the check, not the pack, unless it is an obvious typo.</td></tr>
+<tr><td>A dash slipped through</td><td>Re-run the dash cleanup on an existing pack without a new API call: <code>node generate.mjs --reprocess out/&lt;slug&gt;</code>.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>10. What this is not</h2>
+<p>This is the engine and nothing more. There is no interface, no database, no login, no deployment. The visual prototype for showing a manager, and the between-sessions event surface with unlock timers and artifact posting, are separate builds. Per the project's own rule, the event layer waits until a manager has committed to a date. Keep this tool small and let it stay the thing that makes the tailoring true.</p>
+</div>
+
+<footer>
+Sociaily Case Engine. Repository: magege2002/Demo, branch claude/git-branch-creation-dhyd08. Operating guide generated September 2026.
+</footer>
+
+</body>
+</html>
