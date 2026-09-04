@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 // generate.mjs — Sociaily Case Engine, Phase 1
 //
-// Model note (recorded per dispatch step 5a): the current Anthropic model list,
-// checked at build time, also includes claude-sonnet-5, claude-opus-5,
-// claude-haiku-4-5, and claude-fable-5-1 in addition to claude-sonnet-4-5.
-// The default below is kept at "claude-sonnet-4-5" per the ASSUMED list (item 3)
-// and the dispatch block; override it with the MODEL env var (e.g. to run this
-// against claude-sonnet-5 instead) rather than editing this default.
+// Model note (per dispatch step 5a, which requires updating the default if the
+// guide's id is stale): the guide named "claude-sonnet-4-5", which is
+// superseded. The current list is claude-sonnet-4-6 and claude-sonnet-5 in the
+// Sonnet tier, plus claude-opus-5, claude-opus-4-8, claude-haiku-4-5, and
+// claude-fable-5-1. Default is set to "claude-sonnet-4-6"; override with the
+// MODEL env var (e.g. MODEL=claude-sonnet-5) rather than editing this default.
 //
 // Usage:
 //   node generate.mjs intake/<file>.json [--dry-run]
@@ -17,7 +17,7 @@ import { join, basename } from "node:path";
 import "dotenv/config";
 import Anthropic from "@anthropic-ai/sdk";
 
-const MODEL = process.env.MODEL || "claude-sonnet-4-5";
+const MODEL = process.env.MODEL || "claude-sonnet-4-6";
 
 const SEVEN_FILES = [
   "00-case-brief.md",
