@@ -1,0 +1,888 @@
+<title>Sociaily Case Engine</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --paper:#f5f6f7;
+  --card:#ffffff;
+  --ink:#1b1d21;
+  --muted:#6b7078;
+  --line:#e2e4e7;
+  --accent:#0f5c5b;
+  --accent-2:#b5622a;
+  --accent-soft:#e7f0ef;
+  --twist-soft:#f6ece3;
+  --shadow: 0 1px 2px rgba(20,22,26,0.06), 0 8px 24px rgba(20,22,26,0.06);
+  --focus-ring: 0 0 0 3px rgba(15,92,91,0.32);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161a;
+    --card:#1b1e23;
+    --ink:#eceef0;
+    --muted:#9aa0a8;
+    --line:#2a2f36;
+    --accent:#4db6a8;
+    --accent-2:#d98a54;
+    --accent-soft:#16302e;
+    --twist-soft:#2e2119;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    --focus-ring: 0 0 0 3px rgba(77,182,168,0.4);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161a;
+  --card:#1b1e23;
+  --ink:#eceef0;
+  --muted:#9aa0a8;
+  --line:#2a2f36;
+  --accent:#4db6a8;
+  --accent-2:#d98a54;
+  --accent-soft:#16302e;
+  --twist-soft:#2e2119;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  --focus-ring: 0 0 0 3px rgba(77,182,168,0.4);
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'IBM Plex Sans', -apple-system, Segoe UI, sans-serif;
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.serif{font-family:'Newsreader', Georgia, serif;}
+.mono{font-family:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;}
+
+a{color:var(--accent);}
+button, input, select, textarea{font-family:inherit; color:inherit;}
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible, [tabindex]:focus-visible{
+  outline:none;
+  box-shadow:var(--focus-ring);
+  border-radius:4px;
+}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:30;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between;
+  gap:1rem;
+  padding:0.75rem 1.5rem;
+  flex-wrap:wrap;
+}
+.wordmark-block{display:flex; flex-direction:column; gap:0.15rem;}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:0.6875rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.wordmark{
+  font-family:'Newsreader', serif;
+  font-weight:600;
+  font-size:1.375rem;
+  letter-spacing:-0.01em;
+}
+.topbar-right{display:flex; align-items:center; gap:0.625rem; flex-wrap:wrap;}
+
+.switcher{
+  display:flex; gap:2px;
+  padding:2px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:8px;
+}
+.switcher button{
+  appearance:none; border:none; background:transparent;
+  padding:0.375rem 0.75rem;
+  font-size:0.8125rem;
+  font-weight:500;
+  color:var(--muted);
+  border-radius:6px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.switcher button:hover{color:var(--ink);}
+.switcher button[aria-pressed="true"]{
+  background:var(--accent-soft);
+  color:var(--accent);
+}
+
+.btn{
+  appearance:none; border:1px solid var(--line); background:var(--card);
+  color:var(--ink);
+  padding:0.5rem 0.9rem;
+  border-radius:7px;
+  font-size:0.8125rem;
+  font-weight:500;
+  cursor:pointer;
+  display:inline-flex; align-items:center; gap:0.4rem;
+}
+.btn:hover{border-color:var(--muted);}
+.btn-accent{
+  background:var(--accent); border-color:var(--accent); color:#fff;
+}
+.btn-accent:hover{filter:brightness(1.06);}
+.btn-icon{
+  width:2rem; height:2rem; padding:0; justify-content:center;
+  border-radius:7px; font-size:0.9rem;
+}
+
+/* ---------- case header band ---------- */
+.header-band{
+  padding:2rem 1.5rem 1.5rem;
+  border-bottom:1px solid var(--line);
+}
+.header-inner{max-width:760px; margin:0 auto;}
+.case-title{
+  font-family:'Newsreader', serif;
+  font-weight:600;
+  font-size:2.15rem;
+  line-height:1.15;
+  text-wrap:balance;
+  margin:0 0 0.9rem;
+}
+.meta-row{display:flex; flex-wrap:wrap; gap:0.5rem;}
+.chip{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:0.75rem;
+  padding:0.3rem 0.7rem;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--card);
+  color:var(--muted);
+  white-space:nowrap;
+}
+.chip b{color:var(--ink); font-weight:500;}
+.chip-tool{
+  background:var(--accent-soft);
+  border-color:transparent;
+  color:var(--accent);
+}
+
+/* ---------- tab nav ---------- */
+.tabnav{
+  position:sticky; top:57px; z-index:20;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+  overflow-x:auto;
+}
+.tabnav-inner{
+  max-width:760px; margin:0 auto;
+  display:flex; gap:1.5rem;
+  padding:0 1.5rem;
+}
+.tab{
+  appearance:none; border:none; background:transparent;
+  padding:0.85rem 0.1rem 0.75rem;
+  font-size:0.84375rem;
+  font-weight:500;
+  color:var(--muted);
+  border-bottom:2px solid transparent;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.tab:hover{color:var(--ink);}
+.tab[aria-selected="true"]{
+  color:var(--accent);
+  border-bottom-color:var(--accent);
+}
+
+/* ---------- content ---------- */
+main{padding:2.5rem 1.5rem 6rem;}
+.content-wrap{max-width:760px; margin:0 auto;}
+
+.case-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  padding:2.5rem 2.75rem;
+}
+.case-card .prose{font-family:'Newsreader', serif; font-size:1.0625rem; line-height:1.7;}
+
+.twist-panel{
+  border-left:4px solid var(--accent-2);
+  background:var(--twist-soft);
+  border-radius:0 10px 10px 0;
+  padding:1.75rem 2rem;
+}
+
+.prose h1{
+  font-family:'Newsreader', serif; font-weight:600; font-size:1.6rem;
+  margin:0 0 0.9rem; text-wrap:balance;
+}
+.prose h2{
+  font-family:'Newsreader', serif; font-weight:600; font-size:1.3rem;
+  margin:1.9rem 0 0.75rem;
+}
+.prose h3{
+  font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:0.95rem;
+  text-transform:uppercase; letter-spacing:0.04em; color:var(--muted);
+  margin:1.6rem 0 0.6rem;
+}
+.prose p{margin:0 0 1rem;}
+.prose ul, .prose ol{margin:0 0 1rem; padding-left:1.3rem;}
+.prose li{margin-bottom:0.35rem;}
+.prose li > p{margin-bottom:0.35rem;}
+.prose strong{font-weight:600;}
+.prose code{
+  font-family:'IBM Plex Mono',monospace; font-size:0.85em;
+  background:var(--accent-soft); padding:0.1em 0.35em; border-radius:4px;
+}
+.prose blockquote{
+  margin:0 0 1rem; padding:0.25rem 1rem;
+  border-left:3px solid var(--line); color:var(--muted);
+}
+.prose hr{border:none; border-top:1px solid var(--line); margin:2rem 0;}
+.prose > *:last-child{margin-bottom:0;}
+
+/* injection callouts */
+.injection-callout{
+  border-left:3px solid var(--accent-2) !important;
+  background:var(--twist-soft);
+  padding:0.85rem 1.1rem;
+  margin:1.1rem 0 !important;
+  border-radius:0 6px 6px 0;
+}
+
+/* tables / exhibits */
+.table-wrap{
+  overflow-x:auto;
+  margin:0 0 1.5rem;
+  border:1px solid var(--line);
+  border-radius:8px;
+}
+table.data-table{
+  border-collapse:collapse;
+  width:100%;
+  min-width:420px;
+  font-size:0.875rem;
+}
+table.data-table thead th{
+  background:var(--accent-soft);
+  color:var(--ink);
+  text-align:left;
+  font-weight:600;
+  padding:0.6rem 0.85rem;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+table.data-table td{
+  padding:0.55rem 0.85rem;
+  border-bottom:1px solid var(--line);
+}
+table.data-table tbody tr:last-child td{border-bottom:none;}
+table.data-table tbody tr:nth-child(even){background:color-mix(in srgb, var(--card) 96%, var(--ink) 4%);}
+table.data-table td.num{
+  font-family:'IBM Plex Mono',monospace;
+  font-variant-numeric:tabular-nums;
+  text-align:right;
+}
+
+/* main event timeline */
+.timeline{
+  list-style:none; margin:0 0 2rem; padding:0 0 0 1.5rem;
+  border-left:2px solid var(--line);
+}
+.timeline-item{position:relative; padding:0 0 1.2rem;}
+.timeline-item:last-child{padding-bottom:0;}
+.timeline-item::before{
+  content:''; position:absolute; left:-1.593rem; top:0.3rem;
+  width:9px; height:9px; border-radius:50%;
+  background:var(--accent); border:2px solid var(--paper);
+}
+.timeline-time{
+  font-family:'IBM Plex Mono',monospace; font-size:0.8125rem; font-weight:500;
+  color:var(--accent); margin-bottom:0.15rem;
+}
+.timeline-text{font-size:0.9rem; color:var(--ink);}
+
+/* ---------- slide-over ---------- */
+.overlay{
+  position:fixed; inset:0; background:rgba(10,12,14,0.4);
+  opacity:0; pointer-events:none; transition:opacity 0.2s ease;
+  z-index:40;
+}
+.overlay.open{opacity:1; pointer-events:auto;}
+.panel{
+  position:fixed; top:0; right:0; height:100%; width:min(440px, 100%);
+  background:var(--card); border-left:1px solid var(--line);
+  z-index:41; box-shadow:var(--shadow);
+  transform:translateX(100%); transition:transform 0.25s ease;
+  display:flex; flex-direction:column;
+}
+.panel.open{transform:translateX(0);}
+@media (prefers-reduced-motion: reduce){
+  .panel{transition:none;}
+  .overlay{transition:none;}
+}
+.panel-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1.25rem 1.5rem; border-bottom:1px solid var(--line);
+}
+.panel-head h2{
+  font-family:'Newsreader', serif; font-size:1.25rem; font-weight:600; margin:0;
+}
+.panel-body{padding:1.25rem 1.5rem; overflow-y:auto; flex:1;}
+.panel-foot{padding:1.1rem 1.5rem; border-top:1px solid var(--line);}
+
+.field{margin-bottom:1rem;}
+.field label{
+  display:block; font-size:0.75rem; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.04em; color:var(--muted); margin-bottom:0.35rem;
+}
+.field .hint{font-size:0.75rem; color:var(--muted); margin-top:0.3rem;}
+.field input, .field select, .field textarea{
+  width:100%; border:1px solid var(--line); background:var(--paper);
+  color:var(--ink); border-radius:6px; padding:0.55rem 0.7rem; font-size:0.875rem;
+}
+.field textarea{min-height:5rem; resize:vertical; font-family:'IBM Plex Mono',monospace; font-size:0.8125rem;}
+.field-row{display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;}
+.sample-link{
+  background:none; border:none; padding:0; color:var(--accent);
+  font-size:0.8125rem; text-decoration:underline; cursor:pointer; margin-bottom:1.25rem;
+}
+.status-msg{
+  font-size:0.8125rem; padding:0.75rem 0.9rem; border-radius:6px; margin-top:0.9rem;
+}
+.status-msg.info{background:var(--accent-soft); color:var(--accent);}
+.status-msg.error{background:var(--twist-soft); color:var(--accent-2);}
+.section-label{
+  font-family:'IBM Plex Mono',monospace; font-size:0.6875rem; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--muted); margin:1.5rem 0 0.6rem;
+}
+.section-label:first-child{margin-top:0;}
+</style>
+
+<div class="topbar">
+  <div class="wordmark-block">
+    <span class="eyebrow">CASE ENGINE</span>
+    <span class="wordmark">Sociaily Case Engine</span>
+  </div>
+  <div class="topbar-right">
+    <div class="switcher" id="switcher" role="tablist" aria-label="Team"></div>
+    <button class="btn btn-accent" id="buildBtn" type="button">Build a new pack</button>
+    <button class="btn btn-icon" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">◐</button>
+  </div>
+</div>
+
+<div class="header-band">
+  <div class="header-inner">
+    <h1 class="case-title" id="caseTitle"></h1>
+    <div class="meta-row" id="metaRow"></div>
+  </div>
+</div>
+
+<div class="tabnav">
+  <div class="tabnav-inner" id="tabnav" role="tablist" aria-label="Pack sections"></div>
+</div>
+
+<main>
+  <div class="content-wrap" id="contentWrap"></div>
+</main>
+
+<div class="overlay" id="overlay"></div>
+<aside class="panel" id="panel" aria-hidden="true">
+  <div class="panel-head">
+    <h2>Build a new pack</h2>
+    <button class="btn btn-icon" id="closeBtn" type="button" aria-label="Close">✕</button>
+  </div>
+  <div class="panel-body">
+    <button class="sample-link" id="sampleBtn" type="button">Load the Harbor sample values</button>
+    <form id="intakeForm">
+      <div class="section-label">The team</div>
+      <div class="field"><label for="f-company">Company</label><input id="f-company" name="company" type="text" required></div>
+      <div class="field"><label for="f-teamName">Team name</label><input id="f-teamName" name="teamName" type="text" required></div>
+      <div class="field-row">
+        <div class="field"><label for="f-headcount">Headcount</label><input id="f-headcount" name="headcount" type="number" min="1" required></div>
+        <div class="field"><label for="f-function">Function</label>
+          <select id="f-function" name="function">
+            <option value="ops">Operations</option>
+            <option value="gtm">Go-to-market</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label for="f-stack">Tools (comma separated)</label><input id="f-stack" name="stack" type="text" placeholder="Zendesk, Slack, Google Sheets"></div>
+
+      <div class="section-label">The workflow</div>
+      <div class="field"><label for="f-sopName">Workflow name</label><input id="f-sopName" name="sopName" type="text"></div>
+      <div class="field"><label for="f-sopSummary">How it works today</label><textarea id="f-sopSummary" name="sopSummary"></textarea></div>
+      <div class="field"><label for="f-pain">What it's costing you</label><input id="f-pain" name="pain" type="text"></div>
+      <div class="field"><label for="f-deadline">What has to change, and by when</label><input id="f-deadline" name="deadline" type="text"></div>
+
+      <div class="section-label">The constraints</div>
+      <div class="field"><label for="f-offLimits">Off limits (one per line)</label><textarea id="f-offLimits" name="offLimits"></textarea></div>
+      <div class="field"><label for="f-closedLevers">Already ruled out, as "option: reason" (one per line)</label><textarea id="f-closedLevers" name="closedLevers"></textarea></div>
+      <div class="field"><label for="f-theme">If this got fixed, it would look like</label>
+        <select id="f-theme" name="theme">
+          <option value="automation">Something running on its own</option>
+          <option value="dashboard">Something you can see at a glance</option>
+          <option value="research">Something someone had to go dig up</option>
+        </select>
+      </div>
+
+      <div class="section-label">The people</div>
+      <div class="field"><label for="f-pairs">Pairs, as "NameA, NameB" (one per line)</label><textarea id="f-pairs" name="pairs"></textarea></div>
+      <div class="field"><label for="f-tiers">Each person, as "Name: cautious" or "Name: confident" (one per line)</label><textarea id="f-tiers" name="tiers"></textarea></div>
+      <div class="field-row">
+        <div class="field"><label for="f-managerName">Manager name</label><input id="f-managerName" name="managerName" type="text"></div>
+        <div class="field"><label for="f-managerRole">Manager role</label><input id="f-managerRole" name="managerRole" type="text"></div>
+      </div>
+
+      <div class="section-label">The dates</div>
+      <div class="field-row">
+        <div class="field"><label for="f-eventDate">Live session date</label><input id="f-eventDate" name="eventDate" type="date"></div>
+        <div class="field"><label for="f-leadUpStart">Lead-up week starts (Monday before)</label><input id="f-leadUpStart" name="leadUpStart" type="date"></div>
+      </div>
+    </form>
+    <div id="genStatus"></div>
+  </div>
+  <div class="panel-foot">
+    <button class="btn btn-accent" id="submitBtn" type="submit" form="intakeForm" style="width:100%; justify-content:center;">Generate the pack</button>
+  </div>
+</aside>
+
+<script type="application/json" id="packdata">{"packs":{"acme-ops":{"label":"Acme RevOps","intake":{"company":"Acme Software","teamName":"Acme RevOps","headcount":7,"function":"ops","stack":["HubSpot","Slack","Google Sheets","Copilot"],"sopName":"Weekly pipeline review report","sopSummary":"Every Monday from 8am, Dana exports the open deals view from HubSpot into Google Sheets. Luis reconciles rows where the deal stage in HubSpot does not match the stage the rep wrote in the notes field, messaging reps on Slack to confirm. Dana rebuilds the summary tab by hand: pipeline by stage, expected close this month, and slipped deals. Luis writes a short commentary. The report is posted to the leadership Slack channel by noon and the VP of Sales asks follow-up questions in the thread through the afternoon.","pain":"Two people lose every Monday morning to a report the VP reads for three numbers.","deadline":"From October the VP wants the report in her inbox by 9am, not noon, and she has said she will not accept a shorter version.","offLimits":["Changing the HubSpot pipeline schema or stage names","Customer names or emails leaving HubSpot into any AI tool"],"closedLevers":["Hiring a contractor to run the report: no headcount or contractor budget this quarter","Buying a BI tool: procurement is closed until the new fiscal year","Asking the VP to read a dashboard instead: she has said twice that she wants a written report"],"theme":"automation","pairs":[["Dana","Luis"],["Kofi","Renee"],["Sara","Ben"]],"tiers":{"Dana":"confident","Luis":"cautious","Kofi":"cautious","Renee":"confident","Sara":"cautious","Ben":"cautious"},"managerName":"Priya Natarajan","managerRole":"Director of Revenue Operations","eventDate":"2026-09-21","leadUpStart":"2026-09-14"},"files":{"00-case-brief.md":"# The Monday Number\n\nPriya Natarajan runs Revenue Operations at Acme Software. Every Monday two of her seven people spend the morning producing the weekly pipeline review report, which reaches the VP of Sales by noon. From October the VP wants it in her inbox by 9am, and she has said she will not accept a shorter version. Priya has until Friday to tell the VP how the team will get there. That is the whole brief. What you need to know about how the report is actually made, and what Priya has already ruled out, you will earn this week.\n","01-partner-a-unlocks.md":"# Partner A, lead-up track\n\nYou are the confident half of your pair. Your unlocks push you toward designing something that runs on its own with a person checking it. Each unlock is earned by a small rep in a tool already on your seat. Do the rep, then read what it releases.\n\n## Monday 14 September, Clarifying fact\n\n**The rep.** In Copilot, write the objective of this case in one sentence, in your own words, as if restating it back to Priya at the start of a meeting. Paste it into your notes.\n\n**Released.** The report is built from the HubSpot open deals view exported into Google Sheets. It has three parts: pipeline by stage, expected close this month, and slipped deals. The VP's follow-up questions arrive in a Slack thread through Monday afternoon.\n\n## Tuesday 15 September, Exhibit 1, your half\n\n**The rep.** Open the time log below in Google Sheets and ask Copilot for the two steps that account for the most minutes. Write down the number.\n\n**Released.** Time log for last Monday, Dana's half of the process.\n\n| Step | Owner | Minutes |\n|---|---|---|\n| Export open deals view from HubSpot | Dana | 10 |\n| Rebuild summary tab: pipeline by stage | Dana | 45 |\n| Rebuild summary tab: expected close this month | Dana | 40 |\n| Rebuild summary tab: slipped deals | Dana | 35 |\n| Format and post to leadership Slack | Dana | 20 |\n\n## Wednesday 16 September, Closed-off lever\n\n**The rep.** Draft, in Copilot, the one sentence you would say to Priya if she asked \"why not just buy a tool for this.\" Then read what she has already said.\n\n**Released.** Three options are closed. There is no contractor budget this quarter. Procurement for a BI tool is shut until the new fiscal year. And the VP has said twice that she wants a written report, not a dashboard. If your plan depends on any of these, it is not a plan.\n\n## Thursday 17 September, rest day\n\nNothing to do. If your partner unlocks something today you will get a note that new material exists for the pair. That is all the note says.\n\n## Friday 18 September, Hypothesis\n\n**The rep.** Write one sentence: \"The report can reach the VP by 9am if we ______, and that is only true if ______.\" Keep it. You will be asked for it on Monday.\n\n**Released.** Nothing new. The hypothesis is the unlock.\n","02-partner-b-unlocks.md":"# Partner B, lead-up track\n\nYou are the cautious half of your pair. Your unlocks give you more on what to ask and how to approach the problem, and they start a day after your partner's. Each is earned by a small rep in a tool already on your seat.\n\n## Tuesday 15 September, Constraint\n\n**The rep.** In Copilot, ask: \"What questions should I ask before automating a weekly report that contains customer deal data?\" Pick the two questions you think Priya would care most about and write them down.\n\n**Released.** Two things are off limits. Nobody changes the HubSpot pipeline schema or stage names. And no customer name or email leaves HubSpot into any AI tool. Any step that pastes deal rows into Copilot with names attached is out.\n\n## Wednesday 16 September, Exhibit 1, your half\n\n**The rep.** Open the log below in Google Sheets and ask Copilot which single step is the largest. Write down the number and one sentence on why you think it is so large.\n\n**Released.** Time log for last Monday, Luis's half of the process.\n\n| Step | Owner | Minutes |\n|---|---|---|\n| Find rows where HubSpot stage does not match the stage in the rep's notes | Luis | 30 |\n| Message reps on Slack to confirm the right stage | Luis | 75 |\n| Wait for replies and update the sheet | Luis | 40 |\n| Write the commentary paragraph | Luis | 25 |\n\n## Thursday 17 September, Quant drill\n\n**The rep.** Add up both owners' minutes from your half and the steps you know about, multiply by 52, and write the yearly number. Then write one sentence on why that number means nothing on its own.\n\n**Released.** The number means nothing until it is tied to the deadline. The VP did not ask for fewer hours. She asked for 9am. A plan that halves the hours and still lands at 11am fails.\n\n## Friday 18 September, Hypothesis\n\n**The rep.** Write one sentence: \"The report can reach the VP by 9am if we ______, and that is only true if ______.\" You will read it aloud to your partner on Monday.\n\n**Released.** Nothing new. The hypothesis is the unlock.\n","03-pair-bonus.md":"# Pair bonus\n\nThe bonus appears only if both of you choose to combine what you each hold. Nobody has to. If you take it, it is because the edge is worth having in the room on Monday.\n\n## Merge the exhibit\n\nPut the two halves of the time log side by side. Dana's half is 150 minutes of rebuilding three tabs. Luis's half is 170 minutes, and 145 of those are chasing stage mismatches on Slack. Read together: more than half of the whole Monday goes to reconciling a mismatch the VP has never once asked about in her follow-up thread. The twist is that the slowest step in the process is not part of the report the VP reads. It is upstream of it. Whoever fixes the report without touching the mismatch gets the tabs built faster and still misses 9am, because the tabs cannot be built until Luis finishes.\n\n## Sharper constraint\n\nPriya told the VP last quarter that the stage mismatch is a rep discipline problem, and the VP agreed. So a plan that says \"make reps fix their stages\" is a plan Priya has already tried. The constraint nobody else in the room has: the reconciliation has to get faster without asking reps to change anything.\n\n## Joint stand\n\nReconcile your two Friday hypotheses into one sentence you both sign. If they disagree, say where, and pick. On Monday you will open with it.\n\nWhy this is a real edge: pairs that hold the merged exhibit will structure the problem around the mismatch step from the first minute. Pairs that do not will spend the first twenty minutes on the tabs, which is where Exhibit 2 will send them back anyway.\n","04-main-event.md":"# The Monday Number, live session\n\n## The full brief\n\nPriya Natarajan, Director of Revenue Operations at Acme Software, has to tell the VP of Sales by Friday how the weekly pipeline review report will reach the VP's inbox by 9am every Monday from October, at its current length. Today the report reaches the leadership Slack channel by noon. It is produced by Dana and Luis from the HubSpot open deals view in Google Sheets, with reps confirming stage mismatches on Slack. The team has HubSpot, Slack, Google Sheets, and Copilot. The pipeline schema cannot change. No customer name or email leaves HubSpot into an AI tool. There is no contractor budget, no BI tool, and the VP wants a written report. Your pair's job is to tell Priya what to do, as if she is walking into the room at minute ninety.\n\n## Timeline, ninety minutes\n\nMinutes 0 to 10, restate and clarify. Each pair reads its joint stand or its two hypotheses aloud. The facilitator answers clarifying questions with facts from the intake only, and nothing that is in an exhibit.\n\nMinutes 10 to 20, structure. Each pair writes three to five buckets for where the morning goes and where AI might change one of them. Cautious partners: name what you would ask before touching anything. Confident partners: name what would run on its own and who checks it.\n\nMinutes 20 to 40, build, first gate. Exhibit 1 in full is released to any pair that asks for \"the time breakdown\" or names the inputs they need to know where the minutes go. Pairs work in Google Sheets and Copilot on the step they chose.\n\nMinutes 40 to 55, second gate. Exhibit 2 is released to any pair that asks what the VP actually reads or asks about.\n\nMinute 55, Injection 1.\n\nMinutes 55 to 70, build.\n\nMinute 70, Injection 2.\n\nMinutes 70 to 80, build.\n\nMinutes 80 to 90, stands. Each pair delivers to Priya.\n\n## Exhibit 1, the full time log\n\n| Step | Owner | Minutes |\n|---|---|---|\n| Export open deals view from HubSpot | Dana | 10 |\n| Find rows where HubSpot stage does not match the stage in the rep's notes | Luis | 30 |\n| Message reps on Slack to confirm the right stage | Luis | 75 |\n| Wait for replies and update the sheet | Luis | 40 |\n| Rebuild summary tab: pipeline by stage | Dana | 45 |\n| Rebuild summary tab: expected close this month | Dana | 40 |\n| Rebuild summary tab: slipped deals | Dana | 35 |\n| Write the commentary paragraph | Luis | 25 |\n| Format and post to leadership Slack | Dana | 20 |\n\nDana cannot start the summary tabs until Luis has finished reconciling. That dependency is why the morning is a morning.\n\n## Exhibit 2, the VP's follow-up questions, last six Mondays\n\n| Week | Question in the Slack thread |\n|---|---|\n| 1 | Which three deals slipped and why |\n| 1 | What is expected close this month versus last month |\n| 2 | Which slipped deals are over 50k |\n| 3 | Expected close this month, is it up or down from Friday |\n| 4 | Which deals slipped from this month into next |\n| 5 | Same as week 4 |\n| 6 | Expected close this month, and which three slipped |\n\nShe has never asked about the pipeline by stage tab. She has never asked about a stage mismatch. Every question is about two of the three tabs.\n\n## Injection 1, minute 55\n\nPriya's message, read aloud: \"The VP just asked whether the report can include a one-line forecast for the quarter starting in October. She knows it is extra. She would like it if it is possible.\" Pairs decide whether to say yes, and what it costs against 9am.\n\n## Injection 2, minute 70\n\nPriya's message, read aloud: \"Luis is out the Monday after next. Can Dana run it alone that week?\" This is the coordination question. A plan that only works when both people are at their desks is not a plan for 9am.\n\n## What would you do\n\nEach pair, two minutes, to Priya. Open with the one sentence stand. Then: what changes in the Monday process, which step AI does and which step a person checks, who owns it, what you would pilot before October and how you would know it worked, and the one risk you would tell the VP about. No option surveys. A stand.\n","05-facilitator.md":"# Facilitator notes, The Monday Number\n\n## What to release when\n\nFacts from the intake only during minutes 0 to 10. Exhibit 1 at minute 20 or later to any pair that asks for the time breakdown or names that they need to know where the minutes go. Exhibit 2 at minute 40 or later to any pair that asks what the VP reads or asks about. A pair that never asks does not get either. Say so at the end during the retro, kindly, as the lesson.\n\n## The closed levers and what to say\n\nContractor: \"No budget this quarter, next.\" BI tool: \"Procurement is shut until the new fiscal year.\" Dashboard: \"She has said twice she wants it written.\" Make reps fix their stages: \"Priya tried that last quarter and the VP agreed it was rep discipline. It did not change.\"\n\n## The twist and when to confirm it\n\nPairs that opted into the bonus already know that reconciliation is the bottleneck and that Dana's tabs cannot start until Luis finishes. Confirm it for everyone at minute 40 when Exhibit 2 lands, since Exhibit 2 shows the VP never asks about the mismatch. The strongest stands automate the mismatch detection in Google Sheets against the HubSpot export, without names leaving HubSpot, and turn Luis's Slack chase into a single batched message reps answer by 8:30, then have Copilot draft the two tabs the VP actually reads with Dana checking, and keep the pipeline by stage tab as a plain export nobody rebuilds by hand.\n\n## Agent hint budget\n\nThree hints per pair, in order, only when the pair asks for one or has been silent for five minutes.\n\nHint 1, a question: \"Which step has to finish before any other step can start?\"\n\nHint 2, a bucket: \"You have been working on the tabs. Nobody has looked at what happens before the tabs.\"\n\nHint 3, the input: \"Ask for the VP's follow-up questions.\"\n\nFor cautious partners, the agent may add: \"What would you want to know before you let a tool touch this step?\" For confident partners: \"Who checks it, and what happens the week that person is out?\"\n\nThe agent never scores, never compares pairs, and never tells anyone how another person is doing.\n\n## Process rubric, applied to the pair\n\nQuestions raised. Assumptions stated. Priorities. Creativity. Logic. Poise, meaning how gracefully the pair absorbed the two injections. Bonus behaviors: proposed a pilot before October, named an owner, named a measurement (the report's send time on the next four Mondays, and the number of stage mismatches per week).\n\n## The one voluntary signal\n\nWhich pairs opted into the bonus. Record the count as one number for Priya. Never which pairs.\n","06-retro-and-artifacts.md":"# Retro and artifacts, The Monday Number\n\n## Retro, fifteen minutes, same call or next morning\n\nWhat worked. What did not. What changes for the next event. Priya answers last.\n\n## Reasoning card, one per pair\n\nResult: the stand, in one sentence. Reasoning: three to five sentences in the pair's own words on why, including what they got wrong before Exhibit 2. Seed: the Copilot prompt or Google Sheets formula they actually used, written so the next person can edit it rather than copy it.\n\n## Revised SOP skeleton, weekly pipeline review report\n\n1. Sunday 6pm, automatic. HubSpot open deals view exported to Google Sheets on a schedule.\n2. Sunday 6pm, automatic. A formula flags rows where the HubSpot stage and the notes stage disagree. No names leave the sheet.\n3. Monday 7:30am, Luis or Dana, whoever is in. One batched Slack message to reps listing their flagged deal ids only, with a reply deadline of 8:30.\n4. Monday 8:30am, Copilot drafts the expected close and slipped deals tabs from the updated sheet. Dana or Luis reviews every number against the sheet.\n5. Monday 8:45am, the reviewer writes the commentary. Copilot may draft, the person signs.\n6. Monday 9:00am, sent to the VP's inbox and posted to Slack.\n\nHuman checkpoints: steps 3, 4, and 5. Owner: Priya names one, with a named backup for the week either person is out.\n\n## The delta\n\nThe intake's process had two people working in sequence for four hours with the slowest step upstream of the report. The revised process moves the export and the mismatch detection to Sunday night, batches the rep chase into one message with a deadline, and has AI draft the two tabs the VP reads while a person checks them. The change the manager can hold is the send time on the next four Mondays. That is the adoption evidence, and it keeps working after the last event.\n"}},"northwind-gtm":{"label":"Northwind Marketing","intake":{"company":"Northwind Logistics Software","teamName":"Northwind Marketing","headcount":8,"function":"gtm","stack":["HubSpot","Slack","Google Sheets","Copilot","Notion"],"sopName":"Outbound sequence QA","sopSummary":"The team runs twelve outbound email sequences in HubSpot. When a sequence is written or changed, the writer posts it in the marketing Slack channel, one other person reads it for tone against the brand voice page in Notion, and legal is copied on any sequence that makes a claim about delivery times or savings. Reply rates are checked in a Google Sheet that Marcus updates from HubSpot every other Friday. There is no fixed owner for the QA step and the new SDR who joined last month has not been through it.","pain":"Reply rate fell from 4 percent to 1.8 percent over two months and nobody can say why.","deadline":"Marcus has to present a fix to the CRO at the end of the month, either rewrite all twelve sequences or change how they are reviewed.","offLimits":["Any claim about delivery times or savings going out without legal sign-off","Scraping or enriching prospect data from outside HubSpot"],"closedLevers":["Buying a new outbound tool: the CRO said no until reply rate recovers on the current one","Sending more volume: deliverability team has capped daily sends","Hiring a copywriter: no budget this quarter"],"theme":"research","pairs":[["Jade","Omar"],["Elena","Tariq"],["Nia","Wes"],["Leo","Grace"]],"tiers":{"Jade":"confident","Omar":"cautious","Elena":"cautious","Tariq":"confident","Nia":"cautious","Wes":"cautious","Leo":"confident","Grace":"cautious"},"managerName":"Marcus Bell","managerRole":"Marketing Manager","eventDate":"2026-09-28","leadUpStart":"2026-09-21"},"files":{"00-case-brief.md":"# The Sequence Nobody Owns\n\nMarcus Bell manages the eight person marketing team at Northwind Logistics Software. The team's twelve outbound email sequences in HubSpot went from a 4 percent reply rate to 1.8 percent over two months and nobody can say why. At the end of the month Marcus presents a fix to the CRO: rewrite all twelve, or change how sequences are reviewed. He has not decided. What you need to know about how sequences are written, reviewed, and measured, and what he has already ruled out, you will earn this week.\n","01-partner-a-unlocks.md":"# Partner A, lead-up track\n\nYou are the confident half of your pair. Your unlocks push you toward a review process that runs mostly on its own with a named person signing. Each is earned by a small rep in a tool already on your seat.\n\n## Monday 21 September, Clarifying fact\n\n**The rep.** In Copilot, restate the case objective in one sentence as if to Marcus. Then write the first three questions you would ask him before proposing anything.\n\n**Released.** Sequences are written in HubSpot, posted in the marketing Slack channel, read by one other person for tone against the brand voice page in Notion, and copied to legal if they claim delivery times or savings. Reply rates live in a Google Sheet Marcus updates every other Friday. There is no fixed owner for the review step.\n\n## Tuesday 22 September, Exhibit 1, your half\n\n**The rep.** Open the table below in Google Sheets and ask Copilot which sequences fell the most. Write the two sequence names down.\n\n**Released.** Reply rate by sequence, eight weeks ago versus last week, your half of the twelve.\n\n| Sequence | Eight weeks ago | Last week |\n|---|---|---|\n| Cold, VP Ops, delivery times | 5.1% | 1.2% |\n| Cold, VP Ops, cost savings | 4.8% | 1.1% |\n| Cold, Ops manager, general | 3.9% | 1.4% |\n| Warm, webinar follow-up | 6.2% | 5.8% |\n| Warm, content download | 4.4% | 4.1% |\n| Re-engage, closed lost | 2.1% | 1.9% |\n\n## Wednesday 23 September, Closed-off lever\n\n**The rep.** In Copilot, draft the sentence you would say if a teammate proposed \"let's just send more.\" Then read what Marcus has already been told.\n\n**Released.** Three options are closed. No new outbound tool until reply rate recovers on this one. No more volume, the deliverability team has capped daily sends. No copywriter hire this quarter.\n\n## Thursday 24 September, rest day\n\nNothing to do. If your partner unlocks something today you will get a note that new material exists for the pair.\n\n## Friday 25 September, Hypothesis\n\n**The rep.** Write one sentence: \"Reply rate fell because ______, and the fix that does not need a new tool or more volume is ______.\" Keep it for Monday.\n\n**Released.** Nothing new. The hypothesis is the unlock.\n","02-partner-b-unlocks.md":"# Partner B, lead-up track\n\nYou are the cautious half of your pair. Your unlocks give you more on what to ask and how to approach the problem, and they start a day after your partner's.\n\n## Tuesday 22 September, Constraint\n\n**The rep.** In Copilot, ask: \"What should a marketing team check before changing outbound email sequences that make claims about a product?\" Pick the two checks you think Marcus would care most about and write them in Notion.\n\n**Released.** Two things are off limits. No claim about delivery times or savings goes out without legal sign-off. No prospect data is scraped or enriched from outside HubSpot.\n\n## Wednesday 23 September, Exhibit 1, your half\n\n**The rep.** Open the table below in Google Sheets and ask Copilot which sequences fell the most. Write the two sequence names down and one sentence on what they have in common.\n\n**Released.** Reply rate by sequence, eight weeks ago versus last week, your half of the twelve.\n\n| Sequence | Eight weeks ago | Last week |\n|---|---|---|\n| Cold, CFO, cost savings | 3.6% | 0.9% |\n| Cold, CFO, general | 3.1% | 1.0% |\n| Cold, Ops manager, delivery times | 4.2% | 1.3% |\n| Warm, demo no-show | 5.5% | 5.2% |\n| Warm, trial expiring | 6.8% | 6.5% |\n| Re-engage, past customer | 2.4% | 2.2% |\n\n## Thursday 24 September, Quant drill\n\n**The rep.** Count how many sequences in your half fell by more than half, and how many barely moved. Multiply the fallen ones by the daily send cap of 300 and write the number of emails per day going into sequences that are not working. Then write one sentence on why the number means nothing on its own.\n\n**Released.** The number means nothing until it is tied to the CRO's question, which is not \"how many emails\" but \"rewrite or review.\" A plan that fixes the number and does not answer that question fails.\n\n## Friday 25 September, Hypothesis\n\n**The rep.** Write one sentence: \"Reply rate fell because ______, and the fix that does not need a new tool or more volume is ______.\" You will read it aloud to your partner on Monday.\n\n**Released.** Nothing new. The hypothesis is the unlock.\n","03-pair-bonus.md":"# Pair bonus\n\nThe bonus appears only if both of you choose to combine what you each hold. Nobody has to.\n\n## Merge the exhibit\n\nPut the two halves side by side. Every cold sequence fell by more than half. Every warm and re-engage sequence barely moved. Each half on its own looks like \"some sequences got worse,\" which points to copy. Together, the split is clean: cold sequences to people who have never heard of Northwind collapsed, sequences to people who already engaged did not. Copy did not change across all six cold sequences in the same week. Something that only cold sends depend on did. That is a deliverability question before it is a copy question, and the deliverability team capped sends for a reason nobody on the marketing team has asked about.\n\n## Sharper constraint\n\nThe brand voice page in Notion was last edited before the new SDR joined, and the two cold sequences that fell furthest were both rewritten by the new SDR in the last six weeks, with legal copied but the tone read skipped because nobody owns it. So there are two problems, not one. A pair that says \"it is all deliverability\" is half right, and a pair that says \"rewrite the copy\" is also half right. The edge is knowing there are two.\n\n## Joint stand\n\nReconcile your two Friday hypotheses into one sentence you both sign, which will have to name both problems.\n\nWhy this is a real edge: pairs holding the merged exhibit will ask the facilitator about deliverability in the first ten minutes. Everyone else finds out at Exhibit 2, thirty minutes later.\n","04-main-event.md":"# The Sequence Nobody Owns, live session\n\n## The full brief\n\nMarcus Bell, Marketing Manager at Northwind Logistics Software, presents a fix to the CRO at the end of the month for a reply rate that fell from 4 percent to 1.8 percent across twelve HubSpot outbound sequences. The choice on the table is rewrite all twelve or change how they are reviewed. The team has HubSpot, Slack, Google Sheets, Copilot, and Notion. Claims about delivery times or savings need legal sign-off. No prospect data from outside HubSpot. No new tool, no more volume, no copywriter. Your pair's job is to tell Marcus what to do, as if he is walking into the room at minute ninety.\n\n## Timeline, ninety minutes\n\nMinutes 0 to 10, restate and clarify. Joint stands or hypotheses aloud. Facilitator answers from the intake only.\n\nMinutes 10 to 20, structure. Three to five buckets. Cautious partners name what they would ask before changing anything that goes to a prospect. Confident partners name the review step that could run on its own and who signs.\n\nMinutes 20 to 40, build, first gate. Exhibit 1 in full is released to any pair that asks for reply rate by sequence or by audience.\n\nMinutes 40 to 55, second gate. Exhibit 2 is released to any pair that asks what changed on the sending side, or asks why the deliverability team capped sends.\n\nMinute 55, Injection 1.\n\nMinutes 55 to 70, build.\n\nMinute 70, Injection 2.\n\nMinutes 70 to 80, build.\n\nMinutes 80 to 90, stands.\n\n## Exhibit 1, reply rate by sequence, all twelve\n\n| Sequence | Audience | Eight weeks ago | Last week | Rewritten in last 6 weeks |\n|---|---|---|---|---|\n| Cold, VP Ops, delivery times | Cold | 5.1% | 1.2% | Yes, new SDR |\n| Cold, VP Ops, cost savings | Cold | 4.8% | 1.1% | Yes, new SDR |\n| Cold, Ops manager, general | Cold | 3.9% | 1.4% | No |\n| Cold, CFO, cost savings | Cold | 3.6% | 0.9% | No |\n| Cold, CFO, general | Cold | 3.1% | 1.0% | No |\n| Cold, Ops manager, delivery times | Cold | 4.2% | 1.3% | No |\n| Warm, webinar follow-up | Warm | 6.2% | 5.8% | No |\n| Warm, content download | Warm | 4.4% | 4.1% | No |\n| Warm, demo no-show | Warm | 5.5% | 5.2% | No |\n| Warm, trial expiring | Warm | 6.8% | 6.5% | No |\n| Re-engage, closed lost | Re-engage | 2.1% | 1.9% | No |\n| Re-engage, past customer | Re-engage | 2.4% | 2.2% | No |\n\n## Exhibit 2, the sending side, from the deliverability team\n\nSeven weeks ago the cold sequences were moved to a new sending domain to protect the main domain. The new domain was not warmed. Bounce rate on cold sends went from 1.4 percent to 6.1 percent in the second week and spam complaints doubled. The deliverability team capped daily sends at 300 to stop the damage and posted about it in an engineering Slack channel the marketing team is not in. Warm and re-engage sequences still go from the main domain.\n\n## Injection 1, minute 55\n\nMarcus's message, read aloud: \"Legal just came back on the VP Ops cost savings sequence. The 30 percent savings claim has to go, or we need a source for it by Friday.\" Pairs decide what happens to that sequence and to the review step that let the claim through.\n\n## Injection 2, minute 70\n\nMarcus's message, read aloud: \"The new SDR asked me this morning how to use Copilot to personalize the cold sequences faster. What do I tell her?\" This is the teaching question. A plan that fixes the sequences and leaves the newest person on the team to figure out the tool alone is a plan that repeats in three months.\n\n## What would you do\n\nEach pair, two minutes, to Marcus. The one sentence stand. Then: rewrite, review, or both, and in what order. Which step AI does and which step a person signs. Who owns the review step from now on. What you would pilot before the CRO meeting and how you would know it worked. The one risk you would tell the CRO about. A stand, not a menu.\n","05-facilitator.md":"# Facilitator notes, The Sequence Nobody Owns\n\n## What to release when\n\nIntake facts only during minutes 0 to 10. Exhibit 1 at minute 20 or later to a pair that asks for reply rates by sequence or audience. Exhibit 2 at minute 40 or later to a pair that asks what changed on the sending side or why sends were capped. If a pair asks about the sending side before minute 40 because they hold the merged exhibit, release Exhibit 2 early. That is the bonus paying off in the room and it should.\n\n## The closed levers and what to say\n\nNew tool: \"The CRO said no until this one recovers.\" More volume: \"The deliverability team capped it, and you will find out why.\" Copywriter: \"No budget this quarter.\"\n\n## The twist and when to confirm it\n\nTwo problems. Deliverability on the cold domain explains most of the fall across all six cold sequences. The unowned review step explains why two of them fell furthest and why a savings claim went out. Confirm both at minute 40 when Exhibit 2 lands. The strongest stands do not rewrite all twelve. They warm the cold domain with the deliverability team, pause the two SDR-rewritten sequences pending a tone read and the legal source, make one person the owner of the review step, have Copilot run a first pass against the Notion brand voice page and flag any delivery or savings claim for legal, and pilot on two cold sequences for two weeks before the CRO meeting with reply rate and bounce rate as the two numbers.\n\n## Agent hint budget\n\nThree hints per pair, in order, only when asked or after five silent minutes.\n\nHint 1, a question: \"Which sequences fell, and which did not? What do the ones that did not have in common?\"\n\nHint 2, a bucket: \"You have been working on the words. Nobody has asked how the emails get delivered.\"\n\nHint 3, the input: \"Ask what changed on the sending side.\"\n\nFor cautious partners: \"What would you want to know before a sequence you touched goes to a CFO?\" For confident partners: \"If the review ran on its own, who signs, and what does the signer see?\"\n\nThe agent never scores, never compares pairs, and never reports on a person.\n\n## Process rubric, applied to the pair\n\nQuestions raised. Assumptions stated. Priorities. Creativity. Logic. Poise under the two injections. Bonus: pilot before the CRO meeting, a named owner for the review step, two named measurements (reply rate and bounce rate per sequence per week).\n\n## The one voluntary signal\n\nWhich pairs opted into the bonus. One number for Marcus. Never which pairs.\n","06-retro-and-artifacts.md":"# Retro and artifacts, The Sequence Nobody Owns\n\n## Retro, fifteen minutes\n\nWhat worked. What did not. What changes for the next event. Marcus answers last.\n\n## Reasoning card, one per pair\n\nResult: the stand in one sentence. Reasoning: three to five sentences in the pair's words, including what they believed before Exhibit 2. Seed: the Copilot prompt they used to check a sequence against the brand voice page, written so the next person edits it rather than copies it.\n\n## Revised SOP skeleton, outbound sequence QA\n\n1. Writer drafts or edits the sequence in HubSpot and posts it in the marketing Slack channel with the audience named (cold, warm, re-engage).\n2. Copilot first pass, run by the writer: compare against the Notion brand voice page, list tone issues, and flag any sentence that claims a delivery time or a saving.\n3. The review owner (one named person, with a named backup) reads the flagged items and the Copilot notes and signs or sends back. Nothing cold goes out without this signature.\n4. Any flagged claim goes to legal with the source attached. No source, no claim.\n5. Every other Friday the review owner, not Marcus, updates the reply and bounce sheet from HubSpot, by audience, and posts the two numbers.\n6. New joiners run steps 1 and 2 with the review owner on their first three sequences.\n\nHuman checkpoints: steps 3, 4, and 6. Owner: Marcus names one this week.\n\n## The delta\n\nThe intake's process had no owner for the review step, a tone check that could be skipped, and a measurement that lived with the manager every other Friday. The revised process names an owner, puts an AI first pass in front of the human read so the human reads flags instead of everything, routes claims to legal with a source, and moves the measurement to the owner by audience so a domain problem shows up as a cold-only fall the week it happens. The change the manager can hold is bounce rate and reply rate by audience on the next four Fridays.\n"}}},"caseMethodPrompt":"You write scenario packs for Sociaily team events. A pack turns one manager's intake record into a case that a team of working professionals solves together, in pairs, on their own tools, over a lead-up week and a ninety minute live session. You are not writing a training module and not writing a hackathon. You are writing a case in the tradition of business school case interviews and case discussions, adapted so that two partners each hold part of it and an AI works alongside them rather than grading them.\n\n## Where these rules come from\n\nThey are distilled from the HBS Management Consulting Club case interview guide and the Wharton 2017 casebook, and from the Harvard case method as taught in the classroom. Follow them as rules, not as flavor.\n\n## The anatomy of a case, and how it becomes a week\n\nA case has a protagonist, a decision, and a deadline. The prompt is a few sentences and everything else is withheld until asked for. The casebook rule is \"give them information only if requested.\" The candidate restates the question, asks clarifying questions, asks for a minute, structures the problem into three to five buckets, states a hypothesis, probes with specific questions, receives exhibits only when they have named the inputs they need, runs into levers the interviewer closes off, does one small calculation and ties it back to the objective, absorbs a mid-case change of direction from the interviewer, and closes with a definite stand plus risks and next steps. The interviewer judges the method, not the answer: the questions raised, the assumptions stated, the priorities chosen, the creativity, the logic, and the poise, with bonus credit for proposing a pilot before a rollout, naming an internal owner, and naming a measurement such as usage rate or a reduction in manual workarounds.\n\nIn a Sociaily pack, the lead-up week does the withholding. Each unlock is exactly one of: a clarifying fact the case would only give if asked, half of an exhibit, a constraint the manager set, a closed-off lever, a small quantitative drill, or a written hypothesis. Each unlock is earned by a small rep in the person's own tool, named from the intake's stack and nothing else. Partner A's track starts on the first lead-up day. Partner B's track starts one day later. Each track is complete on its own; nobody is short what they need to walk in prepared. The pair bonus is optional and appears only if both partners choose to combine what they hold. It must be a real edge in the room, never decorative: the merged exhibit reveals a twist that neither half shows alone, a sharper constraint nobody else has, and a joint stand the pair reconciles before the event.\n\nThe live session discloses the full brief, releases two exhibits at gates, injects two changes mid-session, and ends with each pair delivering a definite stand to the manager as if she were walking into the room. Team standing is group only. There is no individual score anywhere in a pack, and no leaderboard.\n\n## Rules that decide whether the pack is any good\n\n1. Ground every sentence in the intake. The protagonist is managerName with managerRole. The workflow is sopName as described in sopSummary. The pain is the manager's own sentence. The deadline is the intake's deadline. Tools named anywhere in the pack come only from the stack array and the closedLevers array. If you need a tool that is not there, you are writing a different team's case.\n2. Withhold on purpose. The case brief is under 120 words and contains no exhibit, no constraint, no number beyond what the manager would say in the first breath. Everything else is released by an unlock or a gate.\n3. Halves that only make sense combined. Exhibit 1 is split so that each half looks complete and points to a plausible but wrong conclusion. The twist appears only when the halves are read together. Never describe the twist in either partner's track. Describe it only in the pair bonus and the facilitator notes.\n4. Close off the obvious levers. Use closedLevers from the intake, each with the manager's reason, released as unlocks and repeated in the facilitator notes as things to say no to when a pair proposes them.\n5. One number, one so-what. The quant drill is minutes per task, times frequency, times people, or an equivalent the intake supports, and the unlock text says the number means nothing until it is tied back to the deadline or the pain.\n6. Scaffold by tier without splitting the brief. A cautious partner gets more on what to ask and how to approach the problem. A confident partner gets pushed toward designing something that runs on its own, with review checkpoints and a named owner. Both work the same brief.\n7. The agent hints, it does not report. The facilitator notes give the agent a hint budget of three per pair, tiered: the first hint is a question, the second names a bucket they have not explored, the third names the input they should ask for. The agent never states a score, never compares pairs, and never names a person's progress to anyone.\n8. Score process, not answer. The facilitator rubric lists the six criteria by name (questions raised, assumptions stated, priorities, creativity, logic, poise) and the three bonus behaviors (pilot before rollout, named owner, named measurement), applied to the pair as a unit.\n9. The deliverable is a revised SOP. The retro file ends with a skeleton of sopName rewritten with AI steps and human review checkpoints, and a short paragraph that names the delta between the intake's sopSummary and the revised version. That delta is the adoption evidence the manager keeps.\n10. Language. No em dashes anywhere; use commas, periods, or restructure. Never use the words hackathon, buildathon, leaderboard, level, grade, fluency score, LLM, token, or hallucination. Never promise a productivity gain. Never introduce the phrase \"falling behind.\" Write in plain, specific prose that a manager would recognize as her team's situation.\n\n## Output Contract\n\nProduce exactly seven files, in this order, separated by a line that is exactly `=== FILE: \u003cfilename\u003e ===`.\n\n`00-case-brief.md`: title, then the prompt, under 120 words, delivered on leadUpStart to the whole team. Protagonist, decision, deadline.\n\n`01-partner-a-unlocks.md`: four unlocks, dated from leadUpStart, one per day with one rest day. Each has: a date, a heading naming the unlock type (Clarifying fact, Exhibit 1 your half, Closed-off lever, Hypothesis), the rep that earns it in one of A's tools, and the content released. Tier scaffolding for A's tier from the intake.\n\n`02-partner-b-unlocks.md`: the same shape, starting one day after A, types Constraint, Exhibit 1 your half, Quant drill, Hypothesis. Tier scaffolding for B's tier.\n\n`03-pair-bonus.md`: how the bonus is triggered (both partners choose to combine), then three bonus unlocks: Merge the exhibit (the twist, stated plainly), Sharper constraint, Joint stand. One line on why the edge is real in the room.\n\n`04-main-event.md`: the full brief, a ninety minute timeline (restate and clarify, structure, build with Exhibit 1 released at the first gate, Exhibit 2 released at the second gate, Injection 1, build, Injection 2, stands), the two exhibits in full, the two injections in full, and a closing section headed \"What would you do\" with the exact framing the pairs deliver to managerName.\n\n`05-facilitator.md`: interviewer-side notes. What to release when. The closed levers and what to say. The twist and when to confirm it. The agent hint budget per pair with the three tiered hints written out. The process rubric applied to pairs. The one voluntary signal to watch: which pairs opted into the bonus.\n\n`06-retro-and-artifacts.md`: the retro questions (what worked, what did not, what changes next event), the three layer reasoning card per pair (result, the pair's reasoning in their words, the prompt or workflow as an editable seed), the revised SOP skeleton, and the delta paragraph.\n","examplesForFunction":{"ops":"acme-ops","gtm":"northwind-gtm"}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var DATA = { packs: {}, caseMethodPrompt: "", examplesForFunction: {} };
+  try{
+    var raw = document.getElementById('packdata').textContent;
+    var parsed = JSON.parse(raw);
+    if(parsed && parsed.packs) DATA = parsed;
+  }catch(e){
+    console.warn('Pack data not injected yet, rendering an empty shell.', e);
+  }
+
+  if(window.marked && marked.setOptions){
+    marked.setOptions({ gfm:true, breaks:false });
+  }
+
+  var FILES_ORDER = [
+    "00-case-brief.md",
+    "01-partner-a-unlocks.md",
+    "02-partner-b-unlocks.md",
+    "03-pair-bonus.md",
+    "04-main-event.md",
+    "05-facilitator.md",
+    "06-retro-and-artifacts.md"
+  ];
+  var TAB_LABELS = ["Brief","Partner A","Partner B","Pair bonus","Main event","Facilitator","Retro"];
+
+  var state = {
+    packKey: DATA.packs && DATA.packs['acme-ops'] ? 'acme-ops' : Object.keys(DATA.packs || {})[0] || null,
+    tabIndex: 0
+  };
+
+  var switcherEl = document.getElementById('switcher');
+  var tabnavEl = document.getElementById('tabnav');
+  var titleEl = document.getElementById('caseTitle');
+  var metaEl = document.getElementById('metaRow');
+  var contentEl = document.getElementById('contentWrap');
+
+  function currentPack(){
+    return state.packKey ? DATA.packs[state.packKey] : null;
+  }
+
+  function firstHeading(md){
+    var m = /^#\s+(.+)$/m.exec(md || "");
+    return m ? m[1].trim() : null;
+  }
+
+  function renderSwitcher(){
+    switcherEl.innerHTML = "";
+    Object.keys(DATA.packs || {}).forEach(function(key){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = DATA.packs[key].label || key;
+      btn.setAttribute('role','tab');
+      btn.setAttribute('aria-pressed', key === state.packKey ? 'true' : 'false');
+      btn.addEventListener('click', function(){
+        state.packKey = key;
+        state.tabIndex = 0;
+        renderAll();
+      });
+      switcherEl.appendChild(btn);
+    });
+  }
+
+  function renderHeader(){
+    var pack = currentPack();
+    if(!pack){ titleEl.textContent = ""; metaEl.innerHTML = ""; return; }
+    var brief = (pack.files && pack.files["00-case-brief.md"]) || "";
+    titleEl.textContent = firstHeading(brief) || pack.label || "";
+
+    var intake = pack.intake || {};
+    var chips = [];
+    if(intake.company) chips.push(chipHTML(intake.company));
+    if(intake.function) chips.push(chipHTML(intake.function === 'gtm' ? 'go-to-market' : 'operations'));
+    if(intake.headcount) chips.push(chipHTML(intake.headcount + ' people'));
+    if(intake.eventDate) chips.push(chipHTML(intake.eventDate));
+    (intake.stack || []).forEach(function(tool){
+      chips.push('<span class="chip chip-tool">' + escapeHTML(tool) + '</span>');
+    });
+    metaEl.innerHTML = chips.join("");
+  }
+
+  function chipHTML(text){
+    return '<span class="chip">' + escapeHTML(String(text)) + '</span>';
+  }
+
+  function escapeHTML(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  // Render markdown with marked when it has loaded; otherwise fall back to a
+  // paragraph-preserving escape so the page reads correctly even if the CDN
+  // script is slow or blocked.
+  function renderMd(md){
+    if(window.marked && marked.parse) return marked.parse(md);
+    return '<p>' + escapeHTML(md).replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>') + '</p>';
+  }
+
+  function renderTabs(){
+    tabnavEl.innerHTML = "";
+    FILES_ORDER.forEach(function(file, i){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tab';
+      btn.textContent = TAB_LABELS[i];
+      btn.setAttribute('role','tab');
+      btn.setAttribute('aria-selected', i === state.tabIndex ? 'true' : 'false');
+      btn.addEventListener('click', function(){
+        state.tabIndex = i;
+        renderTabs();
+        renderContent();
+      });
+      tabnavEl.appendChild(btn);
+    });
+  }
+
+  function buildTimelineStrip(md){
+    var lines = (md || "").split("\n");
+    var items = [];
+    lines.forEach(function(line){
+      var trimmed = line.trim();
+      if(/^Minutes?\b/.test(trimmed)){
+        var commaIdx = trimmed.indexOf(',');
+        var label, text;
+        if(commaIdx > -1){
+          label = trimmed.slice(0, commaIdx).trim();
+          text = trimmed.slice(commaIdx + 1).trim();
+        }else{
+          label = trimmed;
+          text = "";
+        }
+        items.push({label:label, text:text});
+      }
+    });
+    if(!items.length) return "";
+    var html = '<ol class="timeline">';
+    items.forEach(function(item){
+      html += '<li class="timeline-item">' +
+        '<div class="timeline-time">' + escapeHTML(item.label) + '</div>' +
+        '<div class="timeline-text">' + escapeHTML(item.text) + '</div>' +
+        '</li>';
+    });
+    html += '</ol>';
+    return html;
+  }
+
+  function decorateRendered(container, opts){
+    opts = opts || {};
+    // wrap tables, mark numeric cells
+    container.querySelectorAll('table').forEach(function(table){
+      table.classList.add('data-table');
+      table.querySelectorAll('td').forEach(function(td){
+        var t = td.textContent.trim();
+        if(/^-?\$?\d[\d,.%]*$/.test(t)) td.classList.add('num');
+      });
+      var wrap = document.createElement('div');
+      wrap.className = 'table-wrap';
+      table.parentNode.insertBefore(wrap, table);
+      wrap.appendChild(table);
+    });
+    if(opts.injectionCallouts){
+      container.querySelectorAll('h1,h2,h3,h4,p,li').forEach(function(el){
+        var t = el.textContent.trim();
+        if(/^Injection 1\b/.test(t) || /^Injection 2\b/.test(t)){
+          el.classList.add('injection-callout');
+        }
+      });
+    }
+  }
+
+  function renderContent(){
+    var pack = currentPack();
+    contentEl.innerHTML = "";
+    if(!pack){ return; }
+    var filename = FILES_ORDER[state.tabIndex];
+    var md = (pack.files && pack.files[filename]) || "";
+    // The Brief tab already shows the case title in the header band, so drop
+    // the brief's own leading H1 to avoid showing the title twice.
+    var srcMd = (state.tabIndex === 0) ? md.replace(/^#\s+.*\n+/, '') : md;
+    var html = renderMd(srcMd);
+
+    if(state.tabIndex === 0){
+      // Brief
+      var card = document.createElement('div');
+      card.className = 'case-card';
+      var prose = document.createElement('div');
+      prose.className = 'prose';
+      prose.innerHTML = html;
+      card.appendChild(prose);
+      contentEl.appendChild(card);
+      decorateRendered(card, {});
+    }else if(state.tabIndex === 3){
+      // Pair bonus
+      var panel = document.createElement('div');
+      panel.className = 'twist-panel';
+      var proseB = document.createElement('div');
+      proseB.className = 'prose';
+      proseB.innerHTML = html;
+      panel.appendChild(proseB);
+      contentEl.appendChild(panel);
+      decorateRendered(panel, {});
+    }else if(state.tabIndex === 4){
+      // Main event: timeline strip, then prose
+      var stripHTML = buildTimelineStrip(md);
+      if(stripHTML){
+        var stripWrap = document.createElement('div');
+        stripWrap.innerHTML = stripHTML;
+        contentEl.appendChild(stripWrap);
+      }
+      var proseM = document.createElement('div');
+      proseM.className = 'prose';
+      proseM.innerHTML = html;
+      contentEl.appendChild(proseM);
+      decorateRendered(proseM, {injectionCallouts:true});
+    }else{
+      var proseD = document.createElement('div');
+      proseD.className = 'prose';
+      proseD.innerHTML = html;
+      contentEl.appendChild(proseD);
+      decorateRendered(proseD, {});
+    }
+  }
+
+  function renderAll(){
+    renderSwitcher();
+    renderHeader();
+    renderTabs();
+    renderContent();
+  }
+
+  renderAll();
+
+  /* ---------- theme toggle ---------- */
+  var themeToggle = document.getElementById('themeToggle');
+  themeToggle.addEventListener('click', function(){
+    var root = document.documentElement;
+    var current = root.dataset.theme;
+    if(current === 'dark'){
+      root.dataset.theme = 'light';
+    }else if(current === 'light'){
+      root.dataset.theme = 'dark';
+    }else{
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.dataset.theme = prefersDark ? 'light' : 'dark';
+    }
+  });
+
+  /* ---------- slide-over ---------- */
+  var overlay = document.getElementById('overlay');
+  var panel = document.getElementById('panel');
+  var buildBtn = document.getElementById('buildBtn');
+  var closeBtn = document.getElementById('closeBtn');
+  var sampleBtn = document.getElementById('sampleBtn');
+  var form = document.getElementById('intakeForm');
+  var genStatus = document.getElementById('genStatus');
+
+  function openPanel(){
+    overlay.classList.add('open');
+    panel.classList.add('open');
+    panel.setAttribute('aria-hidden','false');
+  }
+  function closePanel(){
+    overlay.classList.remove('open');
+    panel.classList.remove('open');
+    panel.setAttribute('aria-hidden','true');
+  }
+  buildBtn.addEventListener('click', openPanel);
+  closeBtn.addEventListener('click', closePanel);
+  overlay.addEventListener('click', closePanel);
+
+  var HARBOR_SAMPLE = {
+    company: "Harbor Logistics",
+    teamName: "Harbor Support Ops",
+    headcount: 5,
+    function: "ops",
+    stack: "Zendesk, Slack, Google Sheets, Gemini",
+    sopName: "Weekly escalation review",
+    sopSummary: "Every Friday afternoon, two people on the team re-read the week's escalated tickets from the start. They read each ticket end to end and assign it a root cause tag by hand, since Zendesk does not track why a ticket escalated, only that it did. The tags feed a running sheet that the team refers back to when a similar issue comes up again.",
+    pain: "Two people spend every Friday afternoon re-reading tickets to tag root causes.",
+    deadline: "Support leadership wants root cause tagging to happen within a day of a ticket escalating, not batched at the end of the week.",
+    offLimits: "Customer names or details leaving Zendesk",
+    closedLevers: "Buying a ticket analytics add-on: no budget\nChanging Zendesk macros: owned by another team",
+    theme: "automation",
+    pairs: "Ama, Jordan\nPriya, Tom",
+    tiers: "Ama: confident\nJordan: cautious\nPriya: cautious\nTom: confident",
+    managerName: "Sam Okafor",
+    managerRole: "Head of Support Ops",
+    eventDate: "2026-09-28",
+    leadUpStart: "2026-09-21"
+  };
+
+  sampleBtn.addEventListener('click', function(){
+    Object.keys(HARBOR_SAMPLE).forEach(function(key){
+      var field = form.elements[key];
+      if(field) field.value = HARBOR_SAMPLE[key];
+    });
+  });
+
+  function setStatus(kind, message){
+    if(!message){ genStatus.innerHTML = ""; return; }
+    genStatus.innerHTML = '<div class="status-msg ' + kind + '">' + escapeHTML(message) + '</div>';
+  }
+
+  function parseLines(text){
+    return String(text || "").split("\n").map(function(l){ return l.trim(); }).filter(Boolean);
+  }
+
+  function buildIntake(fd){
+    var intake = {};
+    intake.company = fd.get('company') || "";
+    intake.teamName = fd.get('teamName') || "";
+    intake.headcount = parseInt(fd.get('headcount'), 10) || 0;
+    intake['function'] = fd.get('function') || "ops";
+    intake.stack = String(fd.get('stack') || "").split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    intake.sopName = fd.get('sopName') || "";
+    intake.sopSummary = fd.get('sopSummary') || "";
+    intake.pain = fd.get('pain') || "";
+    intake.deadline = fd.get('deadline') || "";
+    intake.offLimits = parseLines(fd.get('offLimits'));
+    intake.closedLevers = parseLines(fd.get('closedLevers'));
+    intake.theme = fd.get('theme') || "automation";
+    intake.pairs = parseLines(fd.get('pairs')).map(function(line){
+      return line.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    });
+    var tiers = {};
+    parseLines(fd.get('tiers')).forEach(function(line){
+      var idx = line.indexOf(':');
+      if(idx > -1){
+        var name = line.slice(0, idx).trim();
+        var val = line.slice(idx + 1).trim().toLowerCase();
+        if(name) tiers[name] = (val === 'confident') ? 'confident' : 'cautious';
+      }
+    });
+    intake.tiers = tiers;
+    intake.managerName = fd.get('managerName') || "";
+    intake.managerRole = fd.get('managerRole') || "";
+    intake.eventDate = fd.get('eventDate') || "";
+    intake.leadUpStart = fd.get('leadUpStart') || "";
+    return intake;
+  }
+
+  function buildGoldExample(intake){
+    var goldKey = DATA.examplesForFunction ? DATA.examplesForFunction[intake['function']] : null;
+    var goldPack = goldKey ? DATA.packs[goldKey] : null;
+    if(!goldPack || !goldPack.files) return "";
+    return FILES_ORDER.map(function(name){
+      var content = goldPack.files[name] || "";
+      return "=== FILE: " + name + " ===\n" + content;
+    }).join("\n\n");
+  }
+
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    generatePack();
+  });
+
+  async function generatePack(){
+    setStatus(null);
+    var submitBtn = document.getElementById('submitBtn');
+    var fd = new FormData(form);
+    var intake = buildIntake(fd);
+
+    var sample;
+    try{
+      sample = await claude.use('sample');
+    }catch(e){
+      sample = null;
+    }
+    if(!sample){
+      setStatus('info', 'Live generation is not available in this view. The preloaded packs above show what a finished pack looks like.');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    setStatus('info', 'Writing the pack...');
+
+    var promptString = (DATA.caseMethodPrompt || "") +
+      "\n\nINTAKE RECORD\n" + JSON.stringify(intake, null, 2) +
+      "\n\nGOLD EXAMPLE\n" + buildGoldExample(intake) +
+      "\n\nProduce the seven files. Separate each with a line that is exactly `=== FILE: <filename> ===`.";
+
+    try{
+      var res = await sample(promptString, {
+        modelTier: 'complex',
+        onText: function(payload){
+          var len = payload && payload.text ? payload.text.length : 0;
+          setStatus('info', 'Writing the pack... ' + len + ' characters');
+        }
+      });
+
+      var text = res && res.text ? res.text : "";
+      var parts = text.split(/^=== FILE: (.+?) ===$/m);
+      var filesObj = {};
+      for(var i = 1; i < parts.length; i += 2){
+        var fname = (parts[i] || "").trim();
+        var fcontent = (parts[i + 1] || "").trim();
+        if(FILES_ORDER.indexOf(fname) > -1){
+          filesObj[fname] = fcontent;
+        }
+      }
+      if(Object.keys(filesObj).length < 7){
+        setStatus('error', 'The pack came back incomplete, try again.');
+        submitBtn.disabled = false;
+        return;
+      }
+
+      var slug = 'custom';
+      DATA.packs[slug] = {
+        label: 'Custom: ' + (intake.teamName || intake.company || 'New team'),
+        intake: intake,
+        files: filesObj
+      };
+      state.packKey = slug;
+      state.tabIndex = 0;
+      renderAll();
+      closePanel();
+      setStatus(null);
+    }catch(err){
+      var code = err && err.code;
+      if(code === 'rate_limited'){
+        setStatus('error', 'Claude is rate limited, wait a moment and try again.');
+      }else if(code === 'not_granted'){
+        setStatus('info', 'Live generation is not available in this view. The preloaded packs above show what a finished pack looks like.');
+      }else{
+        setStatus('error', 'Generation failed, try again.');
+      }
+    }finally{
+      submitBtn.disabled = false;
+    }
+  }
+
+})();
+</script>

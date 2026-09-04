@@ -1,0 +1,888 @@
+<title>Sociaily Case Engine</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --paper:#f5f6f7;
+  --card:#ffffff;
+  --ink:#1b1d21;
+  --muted:#6b7078;
+  --line:#e2e4e7;
+  --accent:#0f5c5b;
+  --accent-2:#b5622a;
+  --accent-soft:#e7f0ef;
+  --twist-soft:#f6ece3;
+  --shadow: 0 1px 2px rgba(20,22,26,0.06), 0 8px 24px rgba(20,22,26,0.06);
+  --focus-ring: 0 0 0 3px rgba(15,92,91,0.32);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161a;
+    --card:#1b1e23;
+    --ink:#eceef0;
+    --muted:#9aa0a8;
+    --line:#2a2f36;
+    --accent:#4db6a8;
+    --accent-2:#d98a54;
+    --accent-soft:#16302e;
+    --twist-soft:#2e2119;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    --focus-ring: 0 0 0 3px rgba(77,182,168,0.4);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161a;
+  --card:#1b1e23;
+  --ink:#eceef0;
+  --muted:#9aa0a8;
+  --line:#2a2f36;
+  --accent:#4db6a8;
+  --accent-2:#d98a54;
+  --accent-soft:#16302e;
+  --twist-soft:#2e2119;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  --focus-ring: 0 0 0 3px rgba(77,182,168,0.4);
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'IBM Plex Sans', -apple-system, Segoe UI, sans-serif;
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.serif{font-family:'Newsreader', Georgia, serif;}
+.mono{font-family:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;}
+
+a{color:var(--accent);}
+button, input, select, textarea{font-family:inherit; color:inherit;}
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible, [tabindex]:focus-visible{
+  outline:none;
+  box-shadow:var(--focus-ring);
+  border-radius:4px;
+}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:30;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between;
+  gap:1rem;
+  padding:0.75rem 1.5rem;
+  flex-wrap:wrap;
+}
+.wordmark-block{display:flex; flex-direction:column; gap:0.15rem;}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:0.6875rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.wordmark{
+  font-family:'Newsreader', serif;
+  font-weight:600;
+  font-size:1.375rem;
+  letter-spacing:-0.01em;
+}
+.topbar-right{display:flex; align-items:center; gap:0.625rem; flex-wrap:wrap;}
+
+.switcher{
+  display:flex; gap:2px;
+  padding:2px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:8px;
+}
+.switcher button{
+  appearance:none; border:none; background:transparent;
+  padding:0.375rem 0.75rem;
+  font-size:0.8125rem;
+  font-weight:500;
+  color:var(--muted);
+  border-radius:6px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.switcher button:hover{color:var(--ink);}
+.switcher button[aria-pressed="true"]{
+  background:var(--accent-soft);
+  color:var(--accent);
+}
+
+.btn{
+  appearance:none; border:1px solid var(--line); background:var(--card);
+  color:var(--ink);
+  padding:0.5rem 0.9rem;
+  border-radius:7px;
+  font-size:0.8125rem;
+  font-weight:500;
+  cursor:pointer;
+  display:inline-flex; align-items:center; gap:0.4rem;
+}
+.btn:hover{border-color:var(--muted);}
+.btn-accent{
+  background:var(--accent); border-color:var(--accent); color:#fff;
+}
+.btn-accent:hover{filter:brightness(1.06);}
+.btn-icon{
+  width:2rem; height:2rem; padding:0; justify-content:center;
+  border-radius:7px; font-size:0.9rem;
+}
+
+/* ---------- case header band ---------- */
+.header-band{
+  padding:2rem 1.5rem 1.5rem;
+  border-bottom:1px solid var(--line);
+}
+.header-inner{max-width:760px; margin:0 auto;}
+.case-title{
+  font-family:'Newsreader', serif;
+  font-weight:600;
+  font-size:2.15rem;
+  line-height:1.15;
+  text-wrap:balance;
+  margin:0 0 0.9rem;
+}
+.meta-row{display:flex; flex-wrap:wrap; gap:0.5rem;}
+.chip{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:0.75rem;
+  padding:0.3rem 0.7rem;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--card);
+  color:var(--muted);
+  white-space:nowrap;
+}
+.chip b{color:var(--ink); font-weight:500;}
+.chip-tool{
+  background:var(--accent-soft);
+  border-color:transparent;
+  color:var(--accent);
+}
+
+/* ---------- tab nav ---------- */
+.tabnav{
+  position:sticky; top:57px; z-index:20;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+  overflow-x:auto;
+}
+.tabnav-inner{
+  max-width:760px; margin:0 auto;
+  display:flex; gap:1.5rem;
+  padding:0 1.5rem;
+}
+.tab{
+  appearance:none; border:none; background:transparent;
+  padding:0.85rem 0.1rem 0.75rem;
+  font-size:0.84375rem;
+  font-weight:500;
+  color:var(--muted);
+  border-bottom:2px solid transparent;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.tab:hover{color:var(--ink);}
+.tab[aria-selected="true"]{
+  color:var(--accent);
+  border-bottom-color:var(--accent);
+}
+
+/* ---------- content ---------- */
+main{padding:2.5rem 1.5rem 6rem;}
+.content-wrap{max-width:760px; margin:0 auto;}
+
+.case-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  padding:2.5rem 2.75rem;
+}
+.case-card .prose{font-family:'Newsreader', serif; font-size:1.0625rem; line-height:1.7;}
+
+.twist-panel{
+  border-left:4px solid var(--accent-2);
+  background:var(--twist-soft);
+  border-radius:0 10px 10px 0;
+  padding:1.75rem 2rem;
+}
+
+.prose h1{
+  font-family:'Newsreader', serif; font-weight:600; font-size:1.6rem;
+  margin:0 0 0.9rem; text-wrap:balance;
+}
+.prose h2{
+  font-family:'Newsreader', serif; font-weight:600; font-size:1.3rem;
+  margin:1.9rem 0 0.75rem;
+}
+.prose h3{
+  font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:0.95rem;
+  text-transform:uppercase; letter-spacing:0.04em; color:var(--muted);
+  margin:1.6rem 0 0.6rem;
+}
+.prose p{margin:0 0 1rem;}
+.prose ul, .prose ol{margin:0 0 1rem; padding-left:1.3rem;}
+.prose li{margin-bottom:0.35rem;}
+.prose li > p{margin-bottom:0.35rem;}
+.prose strong{font-weight:600;}
+.prose code{
+  font-family:'IBM Plex Mono',monospace; font-size:0.85em;
+  background:var(--accent-soft); padding:0.1em 0.35em; border-radius:4px;
+}
+.prose blockquote{
+  margin:0 0 1rem; padding:0.25rem 1rem;
+  border-left:3px solid var(--line); color:var(--muted);
+}
+.prose hr{border:none; border-top:1px solid var(--line); margin:2rem 0;}
+.prose > *:last-child{margin-bottom:0;}
+
+/* injection callouts */
+.injection-callout{
+  border-left:3px solid var(--accent-2) !important;
+  background:var(--twist-soft);
+  padding:0.85rem 1.1rem;
+  margin:1.1rem 0 !important;
+  border-radius:0 6px 6px 0;
+}
+
+/* tables / exhibits */
+.table-wrap{
+  overflow-x:auto;
+  margin:0 0 1.5rem;
+  border:1px solid var(--line);
+  border-radius:8px;
+}
+table.data-table{
+  border-collapse:collapse;
+  width:100%;
+  min-width:420px;
+  font-size:0.875rem;
+}
+table.data-table thead th{
+  background:var(--accent-soft);
+  color:var(--ink);
+  text-align:left;
+  font-weight:600;
+  padding:0.6rem 0.85rem;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+table.data-table td{
+  padding:0.55rem 0.85rem;
+  border-bottom:1px solid var(--line);
+}
+table.data-table tbody tr:last-child td{border-bottom:none;}
+table.data-table tbody tr:nth-child(even){background:color-mix(in srgb, var(--card) 96%, var(--ink) 4%);}
+table.data-table td.num{
+  font-family:'IBM Plex Mono',monospace;
+  font-variant-numeric:tabular-nums;
+  text-align:right;
+}
+
+/* main event timeline */
+.timeline{
+  list-style:none; margin:0 0 2rem; padding:0 0 0 1.5rem;
+  border-left:2px solid var(--line);
+}
+.timeline-item{position:relative; padding:0 0 1.2rem;}
+.timeline-item:last-child{padding-bottom:0;}
+.timeline-item::before{
+  content:''; position:absolute; left:-1.593rem; top:0.3rem;
+  width:9px; height:9px; border-radius:50%;
+  background:var(--accent); border:2px solid var(--paper);
+}
+.timeline-time{
+  font-family:'IBM Plex Mono',monospace; font-size:0.8125rem; font-weight:500;
+  color:var(--accent); margin-bottom:0.15rem;
+}
+.timeline-text{font-size:0.9rem; color:var(--ink);}
+
+/* ---------- slide-over ---------- */
+.overlay{
+  position:fixed; inset:0; background:rgba(10,12,14,0.4);
+  opacity:0; pointer-events:none; transition:opacity 0.2s ease;
+  z-index:40;
+}
+.overlay.open{opacity:1; pointer-events:auto;}
+.panel{
+  position:fixed; top:0; right:0; height:100%; width:min(440px, 100%);
+  background:var(--card); border-left:1px solid var(--line);
+  z-index:41; box-shadow:var(--shadow);
+  transform:translateX(100%); transition:transform 0.25s ease;
+  display:flex; flex-direction:column;
+}
+.panel.open{transform:translateX(0);}
+@media (prefers-reduced-motion: reduce){
+  .panel{transition:none;}
+  .overlay{transition:none;}
+}
+.panel-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1.25rem 1.5rem; border-bottom:1px solid var(--line);
+}
+.panel-head h2{
+  font-family:'Newsreader', serif; font-size:1.25rem; font-weight:600; margin:0;
+}
+.panel-body{padding:1.25rem 1.5rem; overflow-y:auto; flex:1;}
+.panel-foot{padding:1.1rem 1.5rem; border-top:1px solid var(--line);}
+
+.field{margin-bottom:1rem;}
+.field label{
+  display:block; font-size:0.75rem; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.04em; color:var(--muted); margin-bottom:0.35rem;
+}
+.field .hint{font-size:0.75rem; color:var(--muted); margin-top:0.3rem;}
+.field input, .field select, .field textarea{
+  width:100%; border:1px solid var(--line); background:var(--paper);
+  color:var(--ink); border-radius:6px; padding:0.55rem 0.7rem; font-size:0.875rem;
+}
+.field textarea{min-height:5rem; resize:vertical; font-family:'IBM Plex Mono',monospace; font-size:0.8125rem;}
+.field-row{display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;}
+.sample-link{
+  background:none; border:none; padding:0; color:var(--accent);
+  font-size:0.8125rem; text-decoration:underline; cursor:pointer; margin-bottom:1.25rem;
+}
+.status-msg{
+  font-size:0.8125rem; padding:0.75rem 0.9rem; border-radius:6px; margin-top:0.9rem;
+}
+.status-msg.info{background:var(--accent-soft); color:var(--accent);}
+.status-msg.error{background:var(--twist-soft); color:var(--accent-2);}
+.section-label{
+  font-family:'IBM Plex Mono',monospace; font-size:0.6875rem; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--muted); margin:1.5rem 0 0.6rem;
+}
+.section-label:first-child{margin-top:0;}
+</style>
+
+<div class="topbar">
+  <div class="wordmark-block">
+    <span class="eyebrow">CASE ENGINE</span>
+    <span class="wordmark">Sociaily Case Engine</span>
+  </div>
+  <div class="topbar-right">
+    <div class="switcher" id="switcher" role="tablist" aria-label="Team"></div>
+    <button class="btn btn-accent" id="buildBtn" type="button">Build a new pack</button>
+    <button class="btn btn-icon" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">◐</button>
+  </div>
+</div>
+
+<div class="header-band">
+  <div class="header-inner">
+    <h1 class="case-title" id="caseTitle"></h1>
+    <div class="meta-row" id="metaRow"></div>
+  </div>
+</div>
+
+<div class="tabnav">
+  <div class="tabnav-inner" id="tabnav" role="tablist" aria-label="Pack sections"></div>
+</div>
+
+<main>
+  <div class="content-wrap" id="contentWrap"></div>
+</main>
+
+<div class="overlay" id="overlay"></div>
+<aside class="panel" id="panel" aria-hidden="true">
+  <div class="panel-head">
+    <h2>Build a new pack</h2>
+    <button class="btn btn-icon" id="closeBtn" type="button" aria-label="Close">✕</button>
+  </div>
+  <div class="panel-body">
+    <button class="sample-link" id="sampleBtn" type="button">Load the Harbor sample values</button>
+    <form id="intakeForm">
+      <div class="section-label">The team</div>
+      <div class="field"><label for="f-company">Company</label><input id="f-company" name="company" type="text" required></div>
+      <div class="field"><label for="f-teamName">Team name</label><input id="f-teamName" name="teamName" type="text" required></div>
+      <div class="field-row">
+        <div class="field"><label for="f-headcount">Headcount</label><input id="f-headcount" name="headcount" type="number" min="1" required></div>
+        <div class="field"><label for="f-function">Function</label>
+          <select id="f-function" name="function">
+            <option value="ops">Operations</option>
+            <option value="gtm">Go-to-market</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label for="f-stack">Tools (comma separated)</label><input id="f-stack" name="stack" type="text" placeholder="Zendesk, Slack, Google Sheets"></div>
+
+      <div class="section-label">The workflow</div>
+      <div class="field"><label for="f-sopName">Workflow name</label><input id="f-sopName" name="sopName" type="text"></div>
+      <div class="field"><label for="f-sopSummary">How it works today</label><textarea id="f-sopSummary" name="sopSummary"></textarea></div>
+      <div class="field"><label for="f-pain">What it's costing you</label><input id="f-pain" name="pain" type="text"></div>
+      <div class="field"><label for="f-deadline">What has to change, and by when</label><input id="f-deadline" name="deadline" type="text"></div>
+
+      <div class="section-label">The constraints</div>
+      <div class="field"><label for="f-offLimits">Off limits (one per line)</label><textarea id="f-offLimits" name="offLimits"></textarea></div>
+      <div class="field"><label for="f-closedLevers">Already ruled out, as "option: reason" (one per line)</label><textarea id="f-closedLevers" name="closedLevers"></textarea></div>
+      <div class="field"><label for="f-theme">If this got fixed, it would look like</label>
+        <select id="f-theme" name="theme">
+          <option value="automation">Something running on its own</option>
+          <option value="dashboard">Something you can see at a glance</option>
+          <option value="research">Something someone had to go dig up</option>
+        </select>
+      </div>
+
+      <div class="section-label">The people</div>
+      <div class="field"><label for="f-pairs">Pairs, as "NameA, NameB" (one per line)</label><textarea id="f-pairs" name="pairs"></textarea></div>
+      <div class="field"><label for="f-tiers">Each person, as "Name: cautious" or "Name: confident" (one per line)</label><textarea id="f-tiers" name="tiers"></textarea></div>
+      <div class="field-row">
+        <div class="field"><label for="f-managerName">Manager name</label><input id="f-managerName" name="managerName" type="text"></div>
+        <div class="field"><label for="f-managerRole">Manager role</label><input id="f-managerRole" name="managerRole" type="text"></div>
+      </div>
+
+      <div class="section-label">The dates</div>
+      <div class="field-row">
+        <div class="field"><label for="f-eventDate">Live session date</label><input id="f-eventDate" name="eventDate" type="date"></div>
+        <div class="field"><label for="f-leadUpStart">Lead-up week starts (Monday before)</label><input id="f-leadUpStart" name="leadUpStart" type="date"></div>
+      </div>
+    </form>
+    <div id="genStatus"></div>
+  </div>
+  <div class="panel-foot">
+    <button class="btn btn-accent" id="submitBtn" type="submit" form="intakeForm" style="width:100%; justify-content:center;">Generate the pack</button>
+  </div>
+</aside>
+
+<script type="application/json" id="packdata">__PACKDATA_JSON__</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var DATA = { packs: {}, caseMethodPrompt: "", examplesForFunction: {} };
+  try{
+    var raw = document.getElementById('packdata').textContent;
+    var parsed = JSON.parse(raw);
+    if(parsed && parsed.packs) DATA = parsed;
+  }catch(e){
+    console.warn('Pack data not injected yet, rendering an empty shell.', e);
+  }
+
+  if(window.marked && marked.setOptions){
+    marked.setOptions({ gfm:true, breaks:false });
+  }
+
+  var FILES_ORDER = [
+    "00-case-brief.md",
+    "01-partner-a-unlocks.md",
+    "02-partner-b-unlocks.md",
+    "03-pair-bonus.md",
+    "04-main-event.md",
+    "05-facilitator.md",
+    "06-retro-and-artifacts.md"
+  ];
+  var TAB_LABELS = ["Brief","Partner A","Partner B","Pair bonus","Main event","Facilitator","Retro"];
+
+  var state = {
+    packKey: DATA.packs && DATA.packs['acme-ops'] ? 'acme-ops' : Object.keys(DATA.packs || {})[0] || null,
+    tabIndex: 0
+  };
+
+  var switcherEl = document.getElementById('switcher');
+  var tabnavEl = document.getElementById('tabnav');
+  var titleEl = document.getElementById('caseTitle');
+  var metaEl = document.getElementById('metaRow');
+  var contentEl = document.getElementById('contentWrap');
+
+  function currentPack(){
+    return state.packKey ? DATA.packs[state.packKey] : null;
+  }
+
+  function firstHeading(md){
+    var m = /^#\s+(.+)$/m.exec(md || "");
+    return m ? m[1].trim() : null;
+  }
+
+  function renderSwitcher(){
+    switcherEl.innerHTML = "";
+    Object.keys(DATA.packs || {}).forEach(function(key){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = DATA.packs[key].label || key;
+      btn.setAttribute('role','tab');
+      btn.setAttribute('aria-pressed', key === state.packKey ? 'true' : 'false');
+      btn.addEventListener('click', function(){
+        state.packKey = key;
+        state.tabIndex = 0;
+        renderAll();
+      });
+      switcherEl.appendChild(btn);
+    });
+  }
+
+  function renderHeader(){
+    var pack = currentPack();
+    if(!pack){ titleEl.textContent = ""; metaEl.innerHTML = ""; return; }
+    var brief = (pack.files && pack.files["00-case-brief.md"]) || "";
+    titleEl.textContent = firstHeading(brief) || pack.label || "";
+
+    var intake = pack.intake || {};
+    var chips = [];
+    if(intake.company) chips.push(chipHTML(intake.company));
+    if(intake.function) chips.push(chipHTML(intake.function === 'gtm' ? 'go-to-market' : 'operations'));
+    if(intake.headcount) chips.push(chipHTML(intake.headcount + ' people'));
+    if(intake.eventDate) chips.push(chipHTML(intake.eventDate));
+    (intake.stack || []).forEach(function(tool){
+      chips.push('<span class="chip chip-tool">' + escapeHTML(tool) + '</span>');
+    });
+    metaEl.innerHTML = chips.join("");
+  }
+
+  function chipHTML(text){
+    return '<span class="chip">' + escapeHTML(String(text)) + '</span>';
+  }
+
+  function escapeHTML(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  // Render markdown with marked when it has loaded; otherwise fall back to a
+  // paragraph-preserving escape so the page reads correctly even if the CDN
+  // script is slow or blocked.
+  function renderMd(md){
+    if(window.marked && marked.parse) return marked.parse(md);
+    return '<p>' + escapeHTML(md).replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>') + '</p>';
+  }
+
+  function renderTabs(){
+    tabnavEl.innerHTML = "";
+    FILES_ORDER.forEach(function(file, i){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tab';
+      btn.textContent = TAB_LABELS[i];
+      btn.setAttribute('role','tab');
+      btn.setAttribute('aria-selected', i === state.tabIndex ? 'true' : 'false');
+      btn.addEventListener('click', function(){
+        state.tabIndex = i;
+        renderTabs();
+        renderContent();
+      });
+      tabnavEl.appendChild(btn);
+    });
+  }
+
+  function buildTimelineStrip(md){
+    var lines = (md || "").split("\n");
+    var items = [];
+    lines.forEach(function(line){
+      var trimmed = line.trim();
+      if(/^Minutes?\b/.test(trimmed)){
+        var commaIdx = trimmed.indexOf(',');
+        var label, text;
+        if(commaIdx > -1){
+          label = trimmed.slice(0, commaIdx).trim();
+          text = trimmed.slice(commaIdx + 1).trim();
+        }else{
+          label = trimmed;
+          text = "";
+        }
+        items.push({label:label, text:text});
+      }
+    });
+    if(!items.length) return "";
+    var html = '<ol class="timeline">';
+    items.forEach(function(item){
+      html += '<li class="timeline-item">' +
+        '<div class="timeline-time">' + escapeHTML(item.label) + '</div>' +
+        '<div class="timeline-text">' + escapeHTML(item.text) + '</div>' +
+        '</li>';
+    });
+    html += '</ol>';
+    return html;
+  }
+
+  function decorateRendered(container, opts){
+    opts = opts || {};
+    // wrap tables, mark numeric cells
+    container.querySelectorAll('table').forEach(function(table){
+      table.classList.add('data-table');
+      table.querySelectorAll('td').forEach(function(td){
+        var t = td.textContent.trim();
+        if(/^-?\$?\d[\d,.%]*$/.test(t)) td.classList.add('num');
+      });
+      var wrap = document.createElement('div');
+      wrap.className = 'table-wrap';
+      table.parentNode.insertBefore(wrap, table);
+      wrap.appendChild(table);
+    });
+    if(opts.injectionCallouts){
+      container.querySelectorAll('h1,h2,h3,h4,p,li').forEach(function(el){
+        var t = el.textContent.trim();
+        if(/^Injection 1\b/.test(t) || /^Injection 2\b/.test(t)){
+          el.classList.add('injection-callout');
+        }
+      });
+    }
+  }
+
+  function renderContent(){
+    var pack = currentPack();
+    contentEl.innerHTML = "";
+    if(!pack){ return; }
+    var filename = FILES_ORDER[state.tabIndex];
+    var md = (pack.files && pack.files[filename]) || "";
+    // The Brief tab already shows the case title in the header band, so drop
+    // the brief's own leading H1 to avoid showing the title twice.
+    var srcMd = (state.tabIndex === 0) ? md.replace(/^#\s+.*\n+/, '') : md;
+    var html = renderMd(srcMd);
+
+    if(state.tabIndex === 0){
+      // Brief
+      var card = document.createElement('div');
+      card.className = 'case-card';
+      var prose = document.createElement('div');
+      prose.className = 'prose';
+      prose.innerHTML = html;
+      card.appendChild(prose);
+      contentEl.appendChild(card);
+      decorateRendered(card, {});
+    }else if(state.tabIndex === 3){
+      // Pair bonus
+      var panel = document.createElement('div');
+      panel.className = 'twist-panel';
+      var proseB = document.createElement('div');
+      proseB.className = 'prose';
+      proseB.innerHTML = html;
+      panel.appendChild(proseB);
+      contentEl.appendChild(panel);
+      decorateRendered(panel, {});
+    }else if(state.tabIndex === 4){
+      // Main event: timeline strip, then prose
+      var stripHTML = buildTimelineStrip(md);
+      if(stripHTML){
+        var stripWrap = document.createElement('div');
+        stripWrap.innerHTML = stripHTML;
+        contentEl.appendChild(stripWrap);
+      }
+      var proseM = document.createElement('div');
+      proseM.className = 'prose';
+      proseM.innerHTML = html;
+      contentEl.appendChild(proseM);
+      decorateRendered(proseM, {injectionCallouts:true});
+    }else{
+      var proseD = document.createElement('div');
+      proseD.className = 'prose';
+      proseD.innerHTML = html;
+      contentEl.appendChild(proseD);
+      decorateRendered(proseD, {});
+    }
+  }
+
+  function renderAll(){
+    renderSwitcher();
+    renderHeader();
+    renderTabs();
+    renderContent();
+  }
+
+  renderAll();
+
+  /* ---------- theme toggle ---------- */
+  var themeToggle = document.getElementById('themeToggle');
+  themeToggle.addEventListener('click', function(){
+    var root = document.documentElement;
+    var current = root.dataset.theme;
+    if(current === 'dark'){
+      root.dataset.theme = 'light';
+    }else if(current === 'light'){
+      root.dataset.theme = 'dark';
+    }else{
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.dataset.theme = prefersDark ? 'light' : 'dark';
+    }
+  });
+
+  /* ---------- slide-over ---------- */
+  var overlay = document.getElementById('overlay');
+  var panel = document.getElementById('panel');
+  var buildBtn = document.getElementById('buildBtn');
+  var closeBtn = document.getElementById('closeBtn');
+  var sampleBtn = document.getElementById('sampleBtn');
+  var form = document.getElementById('intakeForm');
+  var genStatus = document.getElementById('genStatus');
+
+  function openPanel(){
+    overlay.classList.add('open');
+    panel.classList.add('open');
+    panel.setAttribute('aria-hidden','false');
+  }
+  function closePanel(){
+    overlay.classList.remove('open');
+    panel.classList.remove('open');
+    panel.setAttribute('aria-hidden','true');
+  }
+  buildBtn.addEventListener('click', openPanel);
+  closeBtn.addEventListener('click', closePanel);
+  overlay.addEventListener('click', closePanel);
+
+  var HARBOR_SAMPLE = {
+    company: "Harbor Logistics",
+    teamName: "Harbor Support Ops",
+    headcount: 5,
+    function: "ops",
+    stack: "Zendesk, Slack, Google Sheets, Gemini",
+    sopName: "Weekly escalation review",
+    sopSummary: "Every Friday afternoon, two people on the team re-read the week's escalated tickets from the start. They read each ticket end to end and assign it a root cause tag by hand, since Zendesk does not track why a ticket escalated, only that it did. The tags feed a running sheet that the team refers back to when a similar issue comes up again.",
+    pain: "Two people spend every Friday afternoon re-reading tickets to tag root causes.",
+    deadline: "Support leadership wants root cause tagging to happen within a day of a ticket escalating, not batched at the end of the week.",
+    offLimits: "Customer names or details leaving Zendesk",
+    closedLevers: "Buying a ticket analytics add-on: no budget\nChanging Zendesk macros: owned by another team",
+    theme: "automation",
+    pairs: "Ama, Jordan\nPriya, Tom",
+    tiers: "Ama: confident\nJordan: cautious\nPriya: cautious\nTom: confident",
+    managerName: "Sam Okafor",
+    managerRole: "Head of Support Ops",
+    eventDate: "2026-09-28",
+    leadUpStart: "2026-09-21"
+  };
+
+  sampleBtn.addEventListener('click', function(){
+    Object.keys(HARBOR_SAMPLE).forEach(function(key){
+      var field = form.elements[key];
+      if(field) field.value = HARBOR_SAMPLE[key];
+    });
+  });
+
+  function setStatus(kind, message){
+    if(!message){ genStatus.innerHTML = ""; return; }
+    genStatus.innerHTML = '<div class="status-msg ' + kind + '">' + escapeHTML(message) + '</div>';
+  }
+
+  function parseLines(text){
+    return String(text || "").split("\n").map(function(l){ return l.trim(); }).filter(Boolean);
+  }
+
+  function buildIntake(fd){
+    var intake = {};
+    intake.company = fd.get('company') || "";
+    intake.teamName = fd.get('teamName') || "";
+    intake.headcount = parseInt(fd.get('headcount'), 10) || 0;
+    intake['function'] = fd.get('function') || "ops";
+    intake.stack = String(fd.get('stack') || "").split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    intake.sopName = fd.get('sopName') || "";
+    intake.sopSummary = fd.get('sopSummary') || "";
+    intake.pain = fd.get('pain') || "";
+    intake.deadline = fd.get('deadline') || "";
+    intake.offLimits = parseLines(fd.get('offLimits'));
+    intake.closedLevers = parseLines(fd.get('closedLevers'));
+    intake.theme = fd.get('theme') || "automation";
+    intake.pairs = parseLines(fd.get('pairs')).map(function(line){
+      return line.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    });
+    var tiers = {};
+    parseLines(fd.get('tiers')).forEach(function(line){
+      var idx = line.indexOf(':');
+      if(idx > -1){
+        var name = line.slice(0, idx).trim();
+        var val = line.slice(idx + 1).trim().toLowerCase();
+        if(name) tiers[name] = (val === 'confident') ? 'confident' : 'cautious';
+      }
+    });
+    intake.tiers = tiers;
+    intake.managerName = fd.get('managerName') || "";
+    intake.managerRole = fd.get('managerRole') || "";
+    intake.eventDate = fd.get('eventDate') || "";
+    intake.leadUpStart = fd.get('leadUpStart') || "";
+    return intake;
+  }
+
+  function buildGoldExample(intake){
+    var goldKey = DATA.examplesForFunction ? DATA.examplesForFunction[intake['function']] : null;
+    var goldPack = goldKey ? DATA.packs[goldKey] : null;
+    if(!goldPack || !goldPack.files) return "";
+    return FILES_ORDER.map(function(name){
+      var content = goldPack.files[name] || "";
+      return "=== FILE: " + name + " ===\n" + content;
+    }).join("\n\n");
+  }
+
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    generatePack();
+  });
+
+  async function generatePack(){
+    setStatus(null);
+    var submitBtn = document.getElementById('submitBtn');
+    var fd = new FormData(form);
+    var intake = buildIntake(fd);
+
+    var sample;
+    try{
+      sample = await claude.use('sample');
+    }catch(e){
+      sample = null;
+    }
+    if(!sample){
+      setStatus('info', 'Live generation is not available in this view. The preloaded packs above show what a finished pack looks like.');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    setStatus('info', 'Writing the pack...');
+
+    var promptString = (DATA.caseMethodPrompt || "") +
+      "\n\nINTAKE RECORD\n" + JSON.stringify(intake, null, 2) +
+      "\n\nGOLD EXAMPLE\n" + buildGoldExample(intake) +
+      "\n\nProduce the seven files. Separate each with a line that is exactly `=== FILE: <filename> ===`.";
+
+    try{
+      var res = await sample(promptString, {
+        modelTier: 'complex',
+        onText: function(payload){
+          var len = payload && payload.text ? payload.text.length : 0;
+          setStatus('info', 'Writing the pack... ' + len + ' characters');
+        }
+      });
+
+      var text = res && res.text ? res.text : "";
+      var parts = text.split(/^=== FILE: (.+?) ===$/m);
+      var filesObj = {};
+      for(var i = 1; i < parts.length; i += 2){
+        var fname = (parts[i] || "").trim();
+        var fcontent = (parts[i + 1] || "").trim();
+        if(FILES_ORDER.indexOf(fname) > -1){
+          filesObj[fname] = fcontent;
+        }
+      }
+      if(Object.keys(filesObj).length < 7){
+        setStatus('error', 'The pack came back incomplete, try again.');
+        submitBtn.disabled = false;
+        return;
+      }
+
+      var slug = 'custom';
+      DATA.packs[slug] = {
+        label: 'Custom: ' + (intake.teamName || intake.company || 'New team'),
+        intake: intake,
+        files: filesObj
+      };
+      state.packKey = slug;
+      state.tabIndex = 0;
+      renderAll();
+      closePanel();
+      setStatus(null);
+    }catch(err){
+      var code = err && err.code;
+      if(code === 'rate_limited'){
+        setStatus('error', 'Claude is rate limited, wait a moment and try again.');
+      }else if(code === 'not_granted'){
+        setStatus('info', 'Live generation is not available in this view. The preloaded packs above show what a finished pack looks like.');
+      }else{
+        setStatus('error', 'Generation failed, try again.');
+      }
+    }finally{
+      submitBtn.disabled = false;
+    }
+  }
+
+})();
+</script>
